@@ -7,15 +7,26 @@ fn main() {
 
     println!("Guess a random number!");
 
-    let randomNumber = rand::thread_rng().gen_range(1..=100);
+    let mut randomNumber = rand::thread_rng().gen_range(1..=100); // generates rand number 1-100
 
-    println!("The random number is: {randomNumber}");
+    println!("The random number is: {randomNumber}"); // prints rand number;
 
-    print!("Please enter number: ");
+    // loop create infinite loop that runs until a break
+    loop {
+        println!("Please enter guess");
 
-    let mut guess = String::new();
+        let mut guessString = String::new(); // create new empty String object
 
-    io::stdin().read_line(&mut guess).expect("Failed to read number");
+        io::stdin().read_line(&mut guessString).expect("Failed to read line"); // reads guess as string
 
-    print!("You guessed {guess}");
+        let guessNum: i32 = guessString.trim().parse().expect("Please enter number"); // trims string and casts to i32 number
+
+        // 
+        if (guessNum == randomNumber) {
+            println!("You guessed the number!");
+            break;
+        } else {
+            println!("Sorry wrong guess");
+        }
+    }
 }
