@@ -37,3 +37,7 @@ path = "src/bin/02CommonProgrammingConcepts/functions.rs"
 [[bin]]
 name = "control_flow"
 path = "src/bin/02CommonProgrammingConcepts/control_flow.rs"
+
+[[bin]]
+name = "ownerhip"
+path = "src/bin/02UnderstandingOwnership/ownership.rs"
