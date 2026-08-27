@@ -5,3 +5,31 @@ edition = "2024"
 
 [dependencies]
 rand = "0.8.5"
+
+[[bin]]
+name = "guessingGame"
+path = "src/bin/01GettingStarted&GuessingGame/guessingGame.rs"
+
+[[bin]]
+name = "helloWorld"
+path = "src/bin/01GettingStarted&GuessingGame/helloWorld.rs"
+
+[[bin]]
+name = "higherLowerGuess"
+path = "src/bin/01GettingStarted&GuessingGame/higherLowerGuess.rs"
+
+[[bin]]
+name = "RandNumber"
+path = "src/bin/01GettingStarted&GuessingGame/RandNumber.rs"
+
+[[bin]]
+name = "variables_and_mutability"
+path = "src/bin/02CommonProgrammingConcepts/variables_and_mutability.rs"
+
+[[bin]]
+name = "data_types"
+path = "src/bin/02CommonProgrammingConcepts/data_types.rs"
+
+[[bin]]
+name = "functions"
+path = "src/bin/02CommonProgrammingConcepts/functions.rs"
