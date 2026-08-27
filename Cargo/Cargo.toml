@@ -33,3 +33,7 @@ path = "src/bin/02CommonProgrammingConcepts/data_types.rs"
 [[bin]]
 name = "functions"
 path = "src/bin/02CommonProgrammingConcepts/functions.rs"
+
+[[bin]]
+name = "control_flow"
+path = "src/bin/02CommonProgrammingConcepts/control_flow.rs"
