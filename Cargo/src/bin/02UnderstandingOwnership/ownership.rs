@@ -1,3 +1,5 @@
+pub mod references_and_borrowing;
+
 fn main() {
     {
         let s = "hello"; // valid within this scope
@@ -68,6 +70,16 @@ fn main() {
         println!("Value of s1 is: {s3}");
 
     }
+
+    {
+        let s1 = String::from("hello");
+
+        let (s1, len) = calculate_length(s1); // function call takes ownership of s1, then gives it back
+
+        println!("The length of {s1}, is: {len}");
+
+        println!("s1 is :{s1}");
+    }
 }
 
 fn takes_ownership(string: String) { // function comes into scope
@@ -86,4 +98,11 @@ fn gives_ownership() -> String {
 
 fn takes_and_gives_back(string: String) -> String { // takes ownership if passed heap allocated string
     string // returns it to wherever function was called
+}
+
+// only pass in a String type
+fn calculate_length(string: String) -> (String, usize) { // return a (String, usize) tuple
+    let length = string.len(); // get length of passed string
+
+    (string, length) // returns tuple of (string, length)
 }

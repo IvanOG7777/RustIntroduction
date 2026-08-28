@@ -41,3 +41,11 @@ path = "src/bin/02CommonProgrammingConcepts/control_flow.rs"
 [[bin]]
 name = "ownerhip"
 path = "src/bin/02UnderstandingOwnership/ownership.rs"
+
+[[bin]]
+name = "references_and_borrowing"
+path = "src/bin/02UnderstandingOwnership/references_and_borrowing.rs"
+
+[[bin]]
+name = "the_slice_type"
+path = "src/bin/02UnderstandingOwnership/the_slice_type.rs"

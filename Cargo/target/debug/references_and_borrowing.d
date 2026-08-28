@@ -1,0 +1,1 @@
+C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\target\debug\references_and_borrowing.exe: C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\src\bin\02UnderstandingOwnership\references_and_borrowing.rs
