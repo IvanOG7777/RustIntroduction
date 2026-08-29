@@ -53,3 +53,7 @@ path = "src/bin/03UnderstandingOwnership/the_slice_type.rs"
 [[bin]]
 name = "struct_basics"
 path = "src/bin/04structs/struct_basics.rs"
+
+[[bin]]
+name = "different_instances"
+path = "src/bin/04structs/different_instances.rs"
