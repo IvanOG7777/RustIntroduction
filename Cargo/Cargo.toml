@@ -57,3 +57,11 @@ path = "src/bin/04structs/struct_basics.rs"
 [[bin]]
 name = "different_instances"
 path = "src/bin/04structs/different_instances.rs"
+
+[[bin]]
+name = "rectangle_struct"
+path = "src/bin/04structs/rectangle_struct.rs"
+
+[[bin]]
+name = "methods"
+path = "src/bin/04structs/methods.rs"
