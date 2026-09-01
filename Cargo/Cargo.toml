@@ -65,3 +65,8 @@ path = "src/bin/04structs/rectangle_struct.rs"
 [[bin]]
 name = "methods"
 path = "src/bin/04structs/methods.rs"
+
+
+[[bin]]
+name = "enum_definition"
+path = "src/bin/05enums_and_pattern_matching/enum_definition.rs"
