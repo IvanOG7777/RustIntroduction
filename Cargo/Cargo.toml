@@ -82,3 +82,7 @@ path = "src/bin/practice_problems/largest_number.rs"
 [[bin]]
 name = "array_statistics"
 path = "src/bin/practice_problems/array_statistics.rs"
+
+[[bin]]
+name = "string_inspector"
+path = "src/bin/practice_problems/string_inspector.rs"
