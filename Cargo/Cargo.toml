@@ -70,3 +70,15 @@ path = "src/bin/04structs/methods.rs"
 [[bin]]
 name = "enum_definition"
 path = "src/bin/05enums_and_pattern_matching/enum_definition.rs"
+
+[[bin]]
+name = "number_analyzer"
+path = "src/bin/practice_problems/number_analyzer.rs"
+
+[[bin]]
+name = "largest_number"
+path = "src/bin/practice_problems/largest_number.rs"
+
+[[bin]]
+name = "array_statistics"
+path = "src/bin/practice_problems/array_statistics.rs"
