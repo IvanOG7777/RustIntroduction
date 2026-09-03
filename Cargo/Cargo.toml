@@ -94,3 +94,20 @@ path = "src/bin/practice_problems/modify_through_reference.rs"
 [[bin]]
 name = "ownership_detective"
 path = "src/bin/practice_problems/ownership_detective.rs"
+
+[[bin]]
+name = "first_word"
+path = "src/bin/practice_problems/first_word.rs"
+
+
+[[bin]]
+name = "last_word"
+path = "src/bin/practice_problems/last_word.rs"
+
+[[bin]]
+name = "structs"
+path = "src/bin/practice_problems/structs.rs"
+
+[[bin]]
+name = "struct_move_behavior"
+path = "src/bin/practice_problems/struct_move_behavior.rs"
