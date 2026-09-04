@@ -115,3 +115,11 @@ path = "src/bin/practice_problems/struct_move_behavior.rs"
 [[bin]]
 name = "struct_methods"
 path = "src/bin/practice_problems/struct_methods.rs"
+
+[[bin]]
+name = "enum_traffic_light"
+path = "src/bin/practice_problems/enum_traffic_light.rs"
+
+[[bin]]
+name = "character_classes"
+path = "src/bin/practice_problems/character_classes.rs"
