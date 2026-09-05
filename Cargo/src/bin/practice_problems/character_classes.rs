@@ -21,6 +21,7 @@ impl Character {
         }
     }
 
+    // Character constructor
     fn make_character(name: String, class: CharacterClass) -> Character {
         Character {
             name,
@@ -29,6 +30,7 @@ impl Character {
         }
     }
 
+    // gets the current characters class type as a string
     fn get_class(&self) -> &str {
         match self.class {
             // Ignore both enum variables since we only want to return a string
@@ -38,6 +40,7 @@ impl Character {
         }
     }
 
+    // get health
     fn get_health(&self) -> f32 {
         self.health
     }

@@ -123,3 +123,7 @@ path = "src/bin/practice_problems/enum_traffic_light.rs"
 [[bin]]
 name = "character_classes"
 path = "src/bin/practice_problems/character_classes.rs"
+
+[[bin]]
+name = "game_event_system"
+path = "src/bin/practice_problems/game_event_system.rs"
