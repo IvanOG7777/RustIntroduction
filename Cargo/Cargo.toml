@@ -127,3 +127,7 @@ path = "src/bin/practice_problems/character_classes.rs"
 [[bin]]
 name = "game_event_system"
 path = "src/bin/practice_problems/game_event_system.rs"
+
+[[bin]]
+name = "enum_messages"
+path = "src/bin/practice_problems/enum_messages.rs"

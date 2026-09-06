@@ -6,12 +6,13 @@ use crate::GameEvent::{PlayerJoined, PlayerMoved, PlayerAttacked, PLayerDied, Ga
 const MAX_HEALTH: f32 = 100.0;
 const MAX_PLAYERS: usize = 5;
 
-enum GameEvent{
-    PlayerJoined(String, i32, bool),
+// Allows enum for lifetime parameters ('a)
+enum GameEvent<'a> {
+    PlayerJoined(&'a String, &'a i32, &'a mut bool),
     PlayerMoved(String, i32, (i32, i32, i32)),
-    PlayerAttacked(String, i32, i32),
+    PlayerAttacked(String, i32, f32),
     PLayerDied(String, i32),
-    GameEnded([Player; MAX_PLAYERS]),
+    GameEnded(&'a [Player; MAX_PLAYERS]),
 }
 
 enum CharacterClass {
@@ -97,12 +98,18 @@ impl Player {
             self.is_online = false
         }
     }
+
+    fn set_position(&mut self, passed_position: (i32, i32, i32)) {
+        self.position.0 = passed_position.0;
+        self.position.1 = passed_position.1;
+        self.position.2 = passed_position.2;
+    }
 }
 
 fn handle_event(game_event: GameEvent) {
     match game_event {
-        PlayerJoined(username, id, mut status) => {
-            status = true;
+        PlayerJoined(username, id, status) => {
+            *status = true;
             println!("User: {}, with ID: {}, has joined, is alive: {}", username, id, status);
         },
         PlayerMoved(username, id, (x, y, z)) => {
@@ -139,18 +146,53 @@ fn main() {
     let mut player5 = Player::create_player(String::from("Mike"), String::from("Archer"));
 
 
-    let players: [&mut Player; MAX_PLAYERS] = [&mut player1, &mut player2, &mut player3, &mut player4, &mut player5];
+    // Ownership of each player above is passed to the array
+    let mut players: [Player; MAX_PLAYERS] = [player1, player2, player3, player4, player5];
 
-    for player in &players {
-        handle_event(PlayerJoined(player.username.clone(), player.id.clone(), player.is_alive.clone()));
+    for player in &mut players {
+        handle_event(PlayerJoined(&player.username, &player.id, &mut player.is_alive));
     }
 
     println!();
 
-    for player in &players {
+    for player in &mut players {
         let x = rand::thread_rng().gen_range(-100..=100);
         let y = rand::thread_rng().gen_range(-100..=100);
         let z = rand::thread_rng().gen_range(-100..=100);
-        handle_event(PlayerMoved(player.username.clone(), player.id.clone(), (x, y, z)));
+        player.set_position((x, y, z));
+        handle_event(PlayerMoved(player.username.clone(), player.id, player.position));
     }
+
+
+    println!();
+    for i in 0..MAX_PLAYERS {
+        if i % 2 == 0 {
+            handle_event(PlayerAttacked(players[i].username.clone(), players[i].id.clone(), players[i].character.get_attack_damage().clone()));
+        }
+    }
+
+    handle_event(GameEnded(&players));
+
+
+    let mut active_count = 0;
+    for player in &players {
+        if player.is_alive == true {
+            active_count += 1;
+        }
+    }
+    println!("There are {} active players", active_count);
+
+    for i in 0..(MAX_PLAYERS - 1) {
+        players[i].is_alive = false;
+    }
+
+    let mut active_count = 0;
+    for player in &players {
+        if player.is_alive == true {
+            active_count += 1;
+        }
+    }
+
+    println!("There are {} active players", active_count);
+    handle_event(GameEnded(&players));
 }
