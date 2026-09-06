@@ -131,3 +131,15 @@ path = "src/bin/practice_problems/game_event_system.rs"
 [[bin]]
 name = "enum_messages"
 path = "src/bin/practice_problems/enum_messages.rs"
+
+[[bin]]
+name = "option_t"
+path = "src/bin/practice_problems/option_t.rs"
+
+[[bin]]
+name = "player_option_t"
+path = "src/bin/practice_problems/player_option_t.rs"
+
+[[bin]]
+name = "enum_match_calculator"
+path = "src/bin/practice_problems/enum_match_calculator.rs"
