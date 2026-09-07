@@ -45,6 +45,11 @@ impl BankAccount {
                     return;
                 }
 
+                if deposit_amount <= 0 {
+                    println!("Cannot deposit this amount");
+                    return;
+                }
+
                 self.balance += deposit_amount;
                 self.print_balance();
             }
@@ -52,6 +57,11 @@ impl BankAccount {
             Withdrawal(passed_id, withdrawal_amount) => {
                 if passed_id != self.id {
                     println!("Cant process this withdrawal!");
+                    return;
+                }
+
+                if withdrawal_amount <= 0 {
+                    println!("Cannot withdraw this amount");
                     return;
                 }
 
@@ -67,6 +77,11 @@ impl BankAccount {
             Transfer(to_bank_account, to_id, from_id, transfer_amount) => {
                 if from_id != self.id {
                     println!("Cant process this transaction");
+                    return;
+                }
+
+                if transfer_amount <= 0 {
+                    println!("Cannot transfer this amount");
                     return;
                 }
 
@@ -104,7 +119,7 @@ fn main() {
     println!();
 
     bank_account1.transaction(Deposit(10, 100));
-    bank_account2.transaction(Withdrawal(11, 100));
+    bank_account2.transaction(Withdrawal(11, -100));
 
     bank_account1.transaction(Transfer(&mut bank_account2, 11, 10, 50));
     println!();

@@ -151,3 +151,7 @@ path = "src/bin/practice_problems/rpg_damage_system.rs"
 [[bin]]
 name = "bank_account_sim"
 path = "src/bin/practice_problems/bank_account_sim.rs"
+
+[[bin]]
+name = "text_adventure"
+path = "src/bin/practice_problems/text_adventure.rs"
