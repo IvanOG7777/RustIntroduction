@@ -143,3 +143,11 @@ path = "src/bin/practice_problems/player_option_t.rs"
 [[bin]]
 name = "enum_match_calculator"
 path = "src/bin/practice_problems/enum_match_calculator.rs"
+
+[[bin]]
+name = "rpg_damage_system"
+path = "src/bin/practice_problems/rpg_damage_system.rs"
+
+[[bin]]
+name = "bank_account_sim"
+path = "src/bin/practice_problems/bank_account_sim.rs"
