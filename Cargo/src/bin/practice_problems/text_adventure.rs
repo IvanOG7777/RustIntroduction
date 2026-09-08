@@ -1,9 +1,8 @@
-use std::f32::consts::E;
 use std::io;
 use rand::Rng;
 use crate::Weapon::{Axe, Bow, Sword, IceThrower};
 use crate::EnemyType::{Skeleton, Goblin, Dragon};
-use crate::Action::{Up, Down, Left, Right, OpenChest, Attack, Retreat, Quit};
+use crate::Action::{Up, Down, Left, Right, OpenChest, Attack, Quit, Yes, No};
 const MAX_ENEMIES: usize = 5;
 
 enum Action {
@@ -13,8 +12,9 @@ enum Action {
     Right, // d
     OpenChest, // e
     Attack, // space
-    Retreat, // r
     Quit, // q
+    Yes, // y
+    No, // n
 }
 
 enum Weapon {
@@ -127,7 +127,7 @@ impl Player {
         println!("Health: {}" ,self.health);
     }
 
-    fn attack(&self, enemy: &mut Enemy, enemy_type: EnemyType) {
+    fn attack(&self, enemy: &mut Enemy, enemy_type: &mut EnemyType) {
         match enemy_type {
             Skeleton => {
                 match self.weapon {
@@ -247,28 +247,76 @@ impl Player {
             }
         }
     }
+    fn handle_player_choice(&mut self, action: Action, game_active: &mut bool, current_location: &mut usize, areas: &[&str], enemy: &mut Enemy, enemy_type: &mut EnemyType, rand_weapon: Weapon) {
+        match action {
+            Up | Left => {
+                if *current_location == 0 {
+                    println!("You're already as far back as you can go.");
+                } else {
+                    *current_location -= 1;
+                    println!("You move to: {}", areas[*current_location]);
+                }
+            }
+
+            Down | Right => {
+                if *current_location == areas.len() - 1 {
+                    println!("You're already as far forward as you can go.");
+                } else {
+                    *current_location += 1;
+                    println!("You move to: {}", areas[*current_location]);
+                }
+            }
+
+            OpenChest => {
+                println!("You open a chest, change weapon?");
+                if let Some(response) = read_action() {
+                    match response {
+                        Yes => {
+                            self.weapon = Some(rand_weapon);
+                            println!("You equip the new weapon.");
+                        }
+                        No => {
+                            println!("You leave it behind.");
+                        }
+                        _ => {
+                            println!("Not a yes/no answer — leaving it behind.");
+                        }
+                    }
+                }
+            }
+
+            Attack => {
+                self.attack(enemy, enemy_type);
+            }
+
+            Quit => {
+                println!("Quitting game");
+                *game_active = false;
+            },
+
+            _ => {
+                println!("That action doesn't apply right now.");
+            }
+        }
+    }
 }
 
-fn handle_player_choice(action: Action, game_active: bool, current_location: &mut usize, areas: &[&str]) {
-    match action {
-        Up | Left => {
-            if *current_location == 0 {
-                println!("You're already as far back as you can go.");
-            } else {
-                *current_location -= 1;
-                println!("You move to: {}", areas[*current_location]);
-            }
-        }
+fn read_action() -> Option<Action> {
+    let mut input = String::new();
 
-        Down | Right => {
-            if *current_location == areas.len() - 1 {
-                println!("You're already as far forward as you can go.");
-            } else {
-                *current_location += 1;
-                println!("You move to: {}", areas[*current_location]);
-            }
-        }
-        
+    io::stdin().read_line(&mut input).expect("Failed to read line");
+
+    match input.trim() {
+        "w" => Some(Up),
+        "s" => Some(Down),
+        "a" => Some(Left),
+        "d" => Some(Right),
+        "e" => Some(OpenChest),
+        " " => Some(Attack),
+        "q" => Some(Quit),
+        "y" => Some(Yes),
+        "n" => Some(No),
+        _ => None,
     }
 }
 
@@ -321,9 +369,6 @@ fn main() {
 
     while game_active {
         let rand_enemy_index = rand::thread_rng().gen_range(0..MAX_ENEMIES);
-        let Some(enemy) = enemy_array[rand_enemy_index];
-
-
 
     }
 }
