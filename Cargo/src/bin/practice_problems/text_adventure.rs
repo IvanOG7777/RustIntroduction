@@ -23,7 +23,7 @@ enum Weapon {
     Axe(f32),
     IceThrower(f32, u32),
 }
-
+#[derive(Clone, Copy)]
 enum EnemyType {
     Skeleton,
     Goblin,
@@ -127,8 +127,8 @@ impl Player {
         println!("Health: {}" ,self.health);
     }
 
-    fn attack(&self, enemy: &mut Enemy, enemy_type: &mut EnemyType) {
-        match enemy_type {
+    fn attack(&self, enemy: &mut Enemy) {
+        match enemy.enemy_type {
             Skeleton => {
                 match self.weapon {
                     Some(Sword(damage)) => {
@@ -247,7 +247,7 @@ impl Player {
             }
         }
     }
-    fn handle_player_choice(&mut self, action: Action, game_active: &mut bool, current_location: &mut usize, areas: &[&str], enemy: &mut Enemy, enemy_type: &mut EnemyType, rand_weapon: Weapon) {
+    fn handle_player_choice(&mut self, action: Action, game_active: &mut bool, current_location: &mut usize, areas: &[&str], enemy: &mut Enemy, rand_weapon: Weapon) {
         match action {
             Up | Left => {
                 if *current_location == 0 {
@@ -286,7 +286,7 @@ impl Player {
             }
 
             Attack => {
-                self.attack(enemy, enemy_type);
+                self.attack(enemy);
             }
 
             Quit => {
@@ -320,12 +320,22 @@ fn read_action() -> Option<Action> {
     }
 }
 
+fn random_weapon() -> Weapon {
+    match rand::thread_rng().gen_range(0..4) {
+        0 => Sword(32.0),
+        1 => Bow(15.0, 25),
+        2 => Axe(50.0),
+        _ => IceThrower(20.0, 15),
+    }
+}
+
 fn main() {
 
     // Create array of enemies initially set to None (empty).
     let mut enemy_array: [Option<Enemy>; MAX_ENEMIES] = [const { None }; MAX_ENEMIES];
     let areas = ["Forest", "Broken City", "Underground cellar", "Torn down school"];
-    let game_active = true;
+    let mut game_active = true;
+    let mut current_location = 0;
 
     // Fill in enemy_array with rand generated enemies
     for i in 0..MAX_ENEMIES {
@@ -370,5 +380,16 @@ fn main() {
     while game_active {
         let rand_enemy_index = rand::thread_rng().gen_range(0..MAX_ENEMIES);
 
+        if let Some(enemy) = &mut enemy_array[rand_enemy_index] {
+            println!("An enemy blocks your path!");
+            enemy.print_enemy_stats();
+
+            if let Some(action) = read_action() {
+                let rand_weapon = random_weapon(); // see helper below
+                player.handle_player_choice(action, &mut game_active, &mut current_location, &areas, enemy, rand_weapon);
+            }
+        } else {
+            println!("The path is clear.");
+        }
     }
 }
