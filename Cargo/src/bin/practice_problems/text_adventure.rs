@@ -2,7 +2,7 @@ use std::io;
 use rand::Rng;
 use crate::Weapon::{Axe, Bow, Sword, IceThrower};
 use crate::EnemyType::{Skeleton, Goblin, Dragon};
-use crate::Action::{Up, Down, Left, Right, OpenChest, Attack, Quit, Yes, No};
+use crate::Action::{Up, Down, Left, Right, OpenChest, Attack, Retreat, Quit, Yes, No};
 const MAX_ENEMIES: usize = 5;
 
 enum Action {
@@ -10,13 +10,14 @@ enum Action {
     Down, // s
     Left, // a
     Right, // d
-    OpenChest, // e
-    Attack, // space
+    OpenChest, // f
+    Attack, // e
+    Retreat, // r
     Quit, // q
     Yes, // y
     No, // n
 }
-
+#[derive(Clone, Copy)]
 enum Weapon {
     Sword(f32),
     Bow(f32, u32),
@@ -246,7 +247,7 @@ impl Player {
             }
         }
     }
-    fn handle_player_choice(&mut self, action: Option<Action>, game_active: &mut bool, current_location: &mut usize, areas: &[&str], enemy: &mut Option<Enemy>, rand_weapon: Weapon, user_action: String) {
+    fn handle_player_choice(&mut self, action: Option<Action>, game_active: &mut bool, current_location: &mut usize, areas: &[&str], enemy: &mut Option<Enemy>, rand_weapon: Weapon, user_action: &String) {
         match action {
             Some(Up | Left) => {
                 if *current_location == 0 {
@@ -288,6 +289,15 @@ impl Player {
                 self.attack(enemy);
             }
 
+            Some(Retreat) => {
+                if *current_location == 0 {
+                    *current_location += 1;
+                }
+                if *current_location == areas.len() {
+                    *current_location -= 1;
+                }
+            }
+
             Some(Quit) => {
                 println!("Quitting game");
                 *game_active = false;
@@ -306,8 +316,9 @@ fn read_action(action: &String) -> Option<Action> {
         "s" => Some(Down),
         "a" => Some(Left),
         "d" => Some(Right),
-        "e" => Some(OpenChest),
-        " " => Some(Attack),
+        "f" => Some(OpenChest),
+        "e" => Some(Attack),
+        "r" => Some(Retreat),
         "q" => Some(Quit),
         "y" => Some(Yes),
         "n" => Some(No),
@@ -328,7 +339,7 @@ fn main() {
 
     // Create array of enemies initially set to None (empty).
     let mut enemy_array: [Option<Enemy>; MAX_ENEMIES] = [const { None }; MAX_ENEMIES];
-    let locations = ["Forest", "Broken City", "Underground cellar", "Torn down school"];
+    let locations = ["Forest", "Broken City", "Underground cellar", "Torn down school", "Garden of Eden"];
     let mut game_active = true;
     let mut current_location = 0;
 
@@ -344,6 +355,11 @@ fn main() {
         enemy_array[i] = Some(new_enemy);
     }
 
+    println!("Welcome come to my game");
+    println!("After making character");
+    println!("Press Q to end game");
+    println!();
+    println!();
 
 
     let mut user_name = String::new();
@@ -355,6 +371,7 @@ fn main() {
     println!("1: Sword");
     println!("2: Bow");
     println!("3: Axe");
+    println!("4: Ice Thrower");
 
     io::stdin().read_line(&mut user_weapon).expect("Failed to read");
 
@@ -368,16 +385,35 @@ fn main() {
             1 => Some(Sword(32.0)),
             2 => Some(Bow(15.0, 25)),
             3 => Some(Axe(50.0)),
+            4 => Some(IceThrower(20.0, 15)),
             _ => None
         }
     };
 
+    println!("You are: ");
+    player.print_player_stats();
+    println!();
+
     while game_active {
-        let rand_enemy_index = rand::thread_rng().gen_range(0..MAX_ENEMIES);
+        let mut user_action = String::new();
+        let rand_enemy_index = rand::thread_rng().gen_range(0..locations.len());
+
+        println!("Enemy index: {rand_enemy_index}");
+        println!("Location index: {current_location}");
 
         let enemy = &mut enemy_array[rand_enemy_index];
 
-        let mut user_action = String::new();
+        if rand_enemy_index == current_location {
+            println!("An enemy has appeared!");
+            println!("Do you attack or retreat?");
+            println!("e: Attack");
+            println!("r: Retreat");
+            user_action = String::from(user_action.trim().to_lowercase());
+
+            let action = read_action(&user_action);
+
+            player.handle_player_choice(action, &mut game_active, &mut current_location, &locations, enemy, player.weapon.unwrap(), &user_action)
+        }
 
         println!("You are in: {}", locations[current_location]);
         println!("Where would you like to go");
@@ -391,7 +427,7 @@ fn main() {
 
         let action = read_action(&user_action);
 
-        player.handle_player_choice(action, &mut game_active, &mut current_location, &locations, enemy, random_weapon(), user_action);
+        player.handle_player_choice(action, &mut game_active, &mut current_location, &locations, enemy, player.weapon.unwrap(), &user_action);
         println!();
 
     }
