@@ -398,21 +398,28 @@ fn main() {
         let mut user_action = String::new();
         let rand_enemy_index = rand::thread_rng().gen_range(0..locations.len());
 
-        println!("Enemy index: {rand_enemy_index}");
-        println!("Location index: {current_location}");
-
         let enemy = &mut enemy_array[rand_enemy_index];
 
-        if rand_enemy_index == current_location {
+        while rand_enemy_index == current_location {
+            let does_enemy_attack = rand::thread_rng().gen_range(0..=1);
             println!("An enemy has appeared!");
             println!("Do you attack or retreat?");
             println!("e: Attack");
             println!("r: Retreat");
+            user_action.clear();
+            io::stdin().read_line(&mut user_action).expect("Failed to read line");
             user_action = String::from(user_action.trim().to_lowercase());
 
             let action = read_action(&user_action);
 
-            player.handle_player_choice(action, &mut game_active, &mut current_location, &locations, enemy, player.weapon.unwrap(), &user_action)
+            player.handle_player_choice(action, &mut game_active, &mut current_location, &locations, enemy, player.weapon.unwrap(), &user_action);
+            enemy.as_ref().unwrap().print_enemy_stats();
+
+            if does_enemy_attack == 1 {
+                enemy.as_ref().unwrap().attack(&mut player);
+                println!("Enemy Attacked!");
+                player.print_player_stats();
+            }
         }
 
         println!("You are in: {}", locations[current_location]);
@@ -422,13 +429,14 @@ fn main() {
         println!("a: Left");
         println!("d: Right");
 
+        user_action.clear();
         io::stdin().read_line(&mut user_action).expect("Failed to read line");
         user_action = String::from(user_action.trim().to_lowercase());
+
 
         let action = read_action(&user_action);
 
         player.handle_player_choice(action, &mut game_active, &mut current_location, &locations, enemy, player.weapon.unwrap(), &user_action);
         println!();
-
     }
 }
