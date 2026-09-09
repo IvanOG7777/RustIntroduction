@@ -23,7 +23,6 @@ enum Weapon {
     Axe(f32),
     IceThrower(f32, u32),
 }
-#[derive(Clone, Copy)]
 enum EnemyType {
     Skeleton,
     Goblin,
@@ -127,13 +126,13 @@ impl Player {
         println!("Health: {}" ,self.health);
     }
 
-    fn attack(&self, enemy: &mut Enemy) {
-        match enemy.enemy_type {
+    fn attack(&self, enemy: &mut Option<Enemy>) {
+        match enemy.as_mut().unwrap().enemy_type {
             Skeleton => {
                 match self.weapon {
                     Some(Sword(damage)) => {
                         println!("Hit skeleton with Sword for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                     }
 
                     Some(Bow(damage, mut ammo)) => {
@@ -142,13 +141,13 @@ impl Player {
                             return;
                         }
                         println!("Hit skeleton with Bow for {} damage", damage * 0.15);
-                        enemy.health -= damage * 0.15;
+                        enemy.as_mut().unwrap().health -= damage * 0.15;
                         ammo -= 1;
                     }
 
                     Some(Axe(damage)) => {
                         println!("Hit skeleton with Axe for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                     }
 
                     Some(IceThrower(damage, mut ammo)) => {
@@ -157,13 +156,13 @@ impl Player {
                             return;
                         }
                         println!("Hit skeleton with Ice Thrower for {} damage", damage * 0.25);
-                        enemy.health -= damage * 0.25;
+                        enemy.as_mut().unwrap().health -= damage * 0.25;
                         ammo -= 1;
                     }
 
                     None => {
                         print!("Hit skeleton with hand for 1 damage");
-                        enemy.health -= 1.0;
+                        enemy.as_mut().unwrap().health -= 1.0;
                     }
                 }
             },
@@ -172,7 +171,7 @@ impl Player {
                 match self.weapon {
                     Some(Sword(damage)) => {
                         println!("Hit goblin with Sword for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                     }
 
                     Some(Bow(damage, mut ammo)) => {
@@ -181,13 +180,13 @@ impl Player {
                             return;
                         }
                         println!("Hit goblin with Bow for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                         ammo -= 1;
                     }
 
                     Some(Axe(damage)) => {
                         println!("Hit goblin with Axe for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                     }
 
                     Some(IceThrower(damage, mut ammo)) => {
@@ -196,13 +195,13 @@ impl Player {
                             return;
                         }
                         println!("Hit goblin with Ice Thrower for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                         ammo -= 1;
                     }
 
                     None => {
                         print!("Hit goblin with hand for 1 damage");
-                        enemy.health -= 1.0;
+                        enemy.as_mut().unwrap().health -= 1.0;
                     }
                 }
             },
@@ -211,7 +210,7 @@ impl Player {
                 match self.weapon {
                     Some(Sword(damage)) => {
                         println!("Hit dragon with Sword for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                     }
 
                     Some(Bow(damage, mut ammo)) => {
@@ -220,13 +219,13 @@ impl Player {
                             return;
                         }
                         println!("Hit dragon with Bow for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                         ammo -= 1;
                     }
 
                     Some(Axe(damage)) => {
                         println!("Hit dragon with Axe for {} damage", damage);
-                        enemy.health -= damage;
+                        enemy.as_mut().unwrap().health -= damage;
                     }
 
                     Some(IceThrower(damage, mut ammo)) => {
@@ -235,21 +234,21 @@ impl Player {
                             return;
                         }
                         println!("Hit dragon with Ice Thrower for {} damage", damage * 2.5);
-                        enemy.health -= damage * 2.5;
+                        enemy.as_mut().unwrap().health -= damage * 2.5;
                         ammo -= 1;
                     }
 
                     None => {
                         print!("Hit dragon with hand for 1 damage");
-                        enemy.health -= 1.0;
+                        enemy.as_mut().unwrap().health -= 1.0;
                     }
                 }
             }
         }
     }
-    fn handle_player_choice(&mut self, action: Action, game_active: &mut bool, current_location: &mut usize, areas: &[&str], enemy: &mut Enemy, rand_weapon: Weapon) {
+    fn handle_player_choice(&mut self, action: Option<Action>, game_active: &mut bool, current_location: &mut usize, areas: &[&str], enemy: &mut Option<Enemy>, rand_weapon: Weapon, user_action: String) {
         match action {
-            Up | Left => {
+            Some(Up | Left) => {
                 if *current_location == 0 {
                     println!("You're already as far back as you can go.");
                 } else {
@@ -258,7 +257,7 @@ impl Player {
                 }
             }
 
-            Down | Right => {
+            Some(Down | Right) => {
                 if *current_location == areas.len() - 1 {
                     println!("You're already as far forward as you can go.");
                 } else {
@@ -267,9 +266,9 @@ impl Player {
                 }
             }
 
-            OpenChest => {
+            Some(OpenChest) => {
                 println!("You open a chest, change weapon?");
-                if let Some(response) = read_action() {
+                if let Some(response) = read_action(&user_action) {
                     match response {
                         Yes => {
                             self.weapon = Some(rand_weapon);
@@ -285,11 +284,11 @@ impl Player {
                 }
             }
 
-            Attack => {
+            Some(Attack) => {
                 self.attack(enemy);
             }
 
-            Quit => {
+            Some(Quit) => {
                 println!("Quitting game");
                 *game_active = false;
             },
@@ -301,12 +300,8 @@ impl Player {
     }
 }
 
-fn read_action() -> Option<Action> {
-    let mut input = String::new();
-
-    io::stdin().read_line(&mut input).expect("Failed to read line");
-
-    match input.trim() {
+fn read_action(action: &String) -> Option<Action> {
+    match action.trim() {
         "w" => Some(Up),
         "s" => Some(Down),
         "a" => Some(Left),
@@ -333,7 +328,7 @@ fn main() {
 
     // Create array of enemies initially set to None (empty).
     let mut enemy_array: [Option<Enemy>; MAX_ENEMIES] = [const { None }; MAX_ENEMIES];
-    let areas = ["Forest", "Broken City", "Underground cellar", "Torn down school"];
+    let locations = ["Forest", "Broken City", "Underground cellar", "Torn down school"];
     let mut game_active = true;
     let mut current_location = 0;
 
@@ -380,16 +375,24 @@ fn main() {
     while game_active {
         let rand_enemy_index = rand::thread_rng().gen_range(0..MAX_ENEMIES);
 
-        if let Some(enemy) = &mut enemy_array[rand_enemy_index] {
-            println!("An enemy blocks your path!");
-            enemy.print_enemy_stats();
+        let enemy = &mut enemy_array[rand_enemy_index];
 
-            if let Some(action) = read_action() {
-                let rand_weapon = random_weapon(); // see helper below
-                player.handle_player_choice(action, &mut game_active, &mut current_location, &areas, enemy, rand_weapon);
-            }
-        } else {
-            println!("The path is clear.");
-        }
+        let mut user_action = String::new();
+
+        println!("You are in: {}", locations[current_location]);
+        println!("Where would you like to go");
+        println!("w: Up");
+        println!("s: Down");
+        println!("a: Left");
+        println!("d: Right");
+
+        io::stdin().read_line(&mut user_action).expect("Failed to read line");
+        user_action = String::from(user_action.trim().to_lowercase());
+
+        let action = read_action(&user_action);
+
+        player.handle_player_choice(action, &mut game_active, &mut current_location, &locations, enemy, random_weapon(), user_action);
+        println!();
+
     }
 }
