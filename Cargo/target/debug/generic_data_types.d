@@ -1,0 +1,1 @@
+C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\target\debug\generic_data_types.exe: C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\src\bin\08genetric_types_traits_and_lifetimes\generic_data_types.rs

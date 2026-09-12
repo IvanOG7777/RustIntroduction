@@ -191,3 +191,11 @@ path = "src/bin/08genetric_types_traits_and_lifetimes/removing_duplication.rs"
 [[bin]]
 name = "generic_data_types"
 path = "src/bin/08genetric_types_traits_and_lifetimes/generic_data_types.rs"
+
+[[bin]]
+name = "struct_definitions"
+path = "src/bin/08genetric_types_traits_and_lifetimes/struct_definitions.rs"
+
+[[bin]]
+name = "enum_definitions"
+path = "src/bin/08genetric_types_traits_and_lifetimes/enum_definitions.rs"
