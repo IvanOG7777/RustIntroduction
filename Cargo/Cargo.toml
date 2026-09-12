@@ -6,6 +6,9 @@ edition = "2024"
 [dependencies]
 rand = "0.8.5"
 
+[profile.release]
+panic = 'abort'
+
 [[bin]]
 name = "guessingGame"
 path = "src/bin/01GettingStarted&GuessingGame/guessingGame.rs"
@@ -155,3 +158,36 @@ path = "src/bin/practice_problems/bank_account_sim.rs"
 [[bin]]
 name = "text_adventure"
 path = "src/bin/practice_problems/text_adventure.rs"
+
+[[bin]]
+name = "lists_of_values_in_vectors"
+path = "src/bin/06common_containers/lists_of_values_in_vectors.rs"
+
+[[bin]]
+name = "utf8_strings"
+path = "src/bin/06common_containers/utf8_strings.rs"
+
+[[bin]]
+name = "hash_maps"
+path = "src/bin/06common_containers/hash_maps.rs"
+
+[[bin]]
+name = "panic_errors"
+path = "src/bin/07error_handling/panic_errors.rs"
+
+[[bin]]
+name = "recoverable_errors"
+path = "src/bin/07error_handling/recoverable_errors.rs"
+
+
+[[bin]]
+name = "error_propagation"
+path = "src/bin/07error_handling/error_propagation.rs"
+
+[[bin]]
+name = "removing_duplication"
+path = "src/bin/08genetric_types_traits_and_lifetimes/removing_duplication.rs"
+
+[[bin]]
+name = "generic_data_types"
+path = "src/bin/08genetric_types_traits_and_lifetimes/generic_data_types.rs"

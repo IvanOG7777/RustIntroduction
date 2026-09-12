@@ -1,0 +1,6 @@
+C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\target\debug\deps\removing_duplication-e0230f3d840175ba.d: src\bin\08genetric_types_traits_and_lifetimes\removing_duplication.rs src\bin\08genetric_types_traits_and_lifetimes\generic_data_types.rs
+
+C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\target\debug\deps\libremoving_duplication-e0230f3d840175ba.rmeta: src\bin\08genetric_types_traits_and_lifetimes\removing_duplication.rs src\bin\08genetric_types_traits_and_lifetimes\generic_data_types.rs
+
+src\bin\08genetric_types_traits_and_lifetimes\removing_duplication.rs:
+src\bin\08genetric_types_traits_and_lifetimes\generic_data_types.rs:
