@@ -1,0 +1,1 @@
+C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\target\debug\struct_definitions.exe: C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\src\bin\08genetric_types_traits_and_lifetimes\struct_definitions.rs

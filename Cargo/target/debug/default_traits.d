@@ -1,0 +1,1 @@
+C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\target\debug\default_traits.exe: C:\Users\elder\OneDrive\Desktop\RustIntroduction\Cargo\src\bin\08genetric_types_traits_and_lifetimes\default_traits.rs

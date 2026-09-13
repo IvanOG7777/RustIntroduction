@@ -199,3 +199,15 @@ path = "src/bin/08genetric_types_traits_and_lifetimes/struct_definitions.rs"
 [[bin]]
 name = "enum_definitions"
 path = "src/bin/08genetric_types_traits_and_lifetimes/enum_definitions.rs"
+
+[[bin]]
+name = "defining_trait"
+path = "src/bin/08genetric_types_traits_and_lifetimes/defining_trait.rs"
+
+[[bin]]
+name = "default_traits"
+path = "src/bin/08genetric_types_traits_and_lifetimes/default_traits.rs"
+
+[[bin]]
+name = "traits_as_parameters"
+path = "src/bin/08genetric_types_traits_and_lifetimes/traits_as_parameters.rs"
