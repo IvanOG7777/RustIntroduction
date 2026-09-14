@@ -2,6 +2,16 @@ pub fn add(left: u64, right: u64) -> u64 {
     left + right
 }
 
+pub fn add_two(a: u64) -> u64 {
+    a + 3
+}
+
+pub fn greeting(name: &str) -> String {
+    // format!("Hello: {name}") // returns String object with name str literal attached to it, passes test
+
+    String::from("Hello") // fails test since doesn't contain "Carol" within
+}
+
 #[derive(Debug)]
 struct Rectangle {
     width: u32,
@@ -10,7 +20,7 @@ struct Rectangle {
 
 impl Rectangle {
     fn can_hold(&self, other: &Rectangle) -> bool {
-        self.width < other.width && self.height > other.height
+        self.width > other.width && self.height > other.height
     }
 }
 
@@ -23,6 +33,14 @@ mod tests {
         let result = add(2, 2);
         assert_eq!(result, 4);
     }
+
+    // #[test]
+    // fn it_adds_two() {
+    //     let result = add_two(2);
+    //     // fails since left doesn't equal right at execution
+    //     assert_eq!(result, 4); // check if left and right are equal
+    //     // assert_ne!(result, 4); // check if left and right are NOT equal
+    // }
 
     // #[test]
     // fn another() {
@@ -41,7 +59,7 @@ mod tests {
             height: 6,
         };
 
-        assert!(larger.can_hold(&smaller));
+        assert!(larger.can_hold(&smaller)); // assert if a bool condition is true
     }
 
     #[test]
@@ -57,5 +75,13 @@ mod tests {
         };
 
         assert!(!smaller.can_hold(&larger));
+    }
+
+    #[test]
+    fn greeting_contains_name() {
+        let result = greeting("Carol");
+        assert!(result.contains("Carol"),
+            "Greetings didn't contain name, value was: `{result}"
+        );
     }
 }
