@@ -69,11 +69,6 @@ path = "src/bin/04structs/rectangle_struct.rs"
 name = "methods"
 path = "src/bin/04structs/methods.rs"
 
-
-[[bin]]
-name = "enum_definition"
-path = "src/bin/05enums_and_pattern_matching/enum_definition.rs"
-
 [[bin]]
 name = "number_analyzer"
 path = "src/bin/practice_problems/number_analyzer.rs"
@@ -197,10 +192,6 @@ name = "struct_definitions"
 path = "src/bin/08genetric_types_traits_and_lifetimes/struct_definitions.rs"
 
 [[bin]]
-name = "enum_definitions"
-path = "src/bin/08genetric_types_traits_and_lifetimes/enum_definitions.rs"
-
-[[bin]]
 name = "defining_trait"
 path = "src/bin/08genetric_types_traits_and_lifetimes/defining_trait.rs"
 
@@ -211,3 +202,7 @@ path = "src/bin/08genetric_types_traits_and_lifetimes/default_traits.rs"
 [[bin]]
 name = "traits_as_parameters"
 path = "src/bin/08genetric_types_traits_and_lifetimes/traits_as_parameters.rs"
+
+[[bin]]
+name = "minigrep"
+path = "src/bin/09io_project/minigrep.rs"
