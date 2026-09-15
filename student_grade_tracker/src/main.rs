@@ -2,25 +2,92 @@ use std::io;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry::{Occupied, Vacant};
 use std::io::Write;
+use crate::GradeChoices:: {AddGrade, StudentAverage, ClassHighest, ClassLowest};
 
-struct Entry {
-    name: String,
-    grades: Vec<f32>,
+enum GradeChoices<'a> {
+    AddGrade(String, f32),
+    StudentAverage(& 'a String),
+    ClassHighest,
+    ClassLowest
 }
 
-fn calculate_average_grade(entry: &Entry) -> f32 {
+fn handle_choice(choice: GradeChoices, student_map: &mut HashMap<String, Vec<f32>>) -> Option<f32> {
+    match choice {
+        AddGrade(name, grade) => {
+            match student_map.entry(name) {
+                Vacant(new_entry) => {
+                    let new_grades = new_entry.insert(Vec::new());
+                    new_grades.push(grade);
+
+                    None
+                }
+
+                Occupied(entry) => {
+                    let grades = entry.into_mut();
+                    grades.push(grade);
+
+                    None
+                }
+            }
+        },
+
+        StudentAverage(name)=> {
+            match student_map.get_mut(name) {
+                Some(grades) => {
+                    let average = calculate_average(grades);
+
+                    Some(average)
+                }
+
+                None => None
+            }
+        },
+
+        ClassHighest => {
+            let mut highest_grade: f32 = 0.0;
+
+            for (_name, grades) in student_map.into_iter() {
+                let current_average = calculate_average(grades);
+
+                if current_average > highest_grade {
+                    highest_grade = current_average
+                }
+            }
+
+            Some(highest_grade)
+        },
+
+        ClassLowest => {
+            let mut first_entry = student_map.iter_mut().next();
+
+            let mut lowest: f32 = calculate_average(first_entry.unwrap().1);
+
+            for (_name, grade) in student_map.into_iter() {
+                let current_average = calculate_average(grade);
+
+                if current_average < lowest {
+                    lowest = current_average;
+                }
+            }
+            Some(lowest)
+        }
+    }
+}
+
+fn calculate_average(grades: &mut Vec<f32>) -> f32 {
     let mut average: f32 = 0.0;
     let mut sum: f32 = 0.0;
-    let mut total_grades: f32 = 0.0;
-    for grade in &entry.grades {
-        sum += grade;
-        total_grades += 1.0;
+    let mut total:f32 = 0.0;
+    for grade in grades {
+        sum += *grade;
+        total += 1.0;
     }
 
-    average = sum / total_grades;
+    average = sum / total;
 
     average
 }
+
 
 fn main() {
 
@@ -36,15 +103,32 @@ fn main() {
         println!("4: Get class lowest grade");
         println!("5: Quit grading");
 
+        let option: u32;
         loop {
+            choose_option.clear();
             io::stdin().read_line(&mut choose_option).expect("Failed to read line");
 
-            let option: u32 = match choose_option.trim().parse() {
-                Ok()
+            option = match choose_option.trim().parse() {
+                Ok(num) => num,
+
+                Err(e) => {
+                    println!("Not a valid number try again");
+                    continue;
+                }
             };
+
+            if option >= 1 && option <= 4 {
+                break;
+            } else if option == 5 {
+                println!("Quitting...");
+                break 'options;
+            } else {
+                println!("Please select a valid option");
+            }
         }
 
         println!();
+        
 
         let mut student_name = String::new();
         let mut student_grade = String::new();
@@ -74,17 +158,6 @@ fn main() {
         student_name = String::from(student_name.trim());
         println!();
 
-        match student_map.entry(student_name) {
-            Vacant(new_entry) => {
-                let new_vector =  new_entry.insert(Vec::new());
-                new_vector.push(grade);
-            }
-
-            Occupied(entry) => {
-                let grades = entry.into_mut(); // get mutable reference to value of hash_map
-                grades.push(grade);
-            }
-        }
     }
 
     for (name, grades) in student_map {
@@ -93,6 +166,7 @@ fn main() {
         for grade in grades {
             print!("{grade}, ");
         }
+        println!();
         println!();
     }
 }
