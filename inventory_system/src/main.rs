@@ -1,7 +1,7 @@
+use std::io:: {self, Write};
 use std::collections::HashMap;
 use crate::Choice::{AddItem, RemoveItem, UpdateQuantity, FindItem, InventoryValue};
 use std::collections::hash_map::Entry::{Occupied, Vacant};
-use std::result;
 
 struct Item {
     name: String,
@@ -140,7 +140,54 @@ fn handle_choice(choice: Choice, mut inventory_map: &mut HashMap<String, Item>) 
 
 fn main() {
 
-    let item_map: HashMap<String, Item> = HashMap::new();
+    let mut item_map: HashMap<String, Item> = HashMap::new();
 
+    'options: loop {
+        println!("Please select from following options");
+        println!();
 
+        println!("1: Add Item");
+        println!("2: Remove Item");
+        println!("3: Update Quantity");
+        println!("4: Find Item");
+        println!("5: Inventory Value");
+        println!("6: Quit");
+
+        print!("Select: ");
+        io::stdout().flush().unwrap();
+
+        loop {
+            let mut user_choice = String::new();
+
+            io::stdin().read_line(&mut user_choice).expect("Failed to read line");
+
+            let option: i32 = user_choice.trim().parse().expect("Not a number");
+            println!();
+            match option {
+                1 => {
+                    let mut user_item_name = String::new();
+
+                    println!("Please enter Item name: ");
+                    io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
+
+                    let item_name = String::from(user_item_name.trim());
+                    handle_choice(AddItem(item_name), &mut item_map);
+
+                    println!("Item: {user_item_name} as been added or already exits");
+                    break;
+                },
+
+                6 => {
+                    println!("Quitting...");
+                    break 'options;
+                }
+                i32::MIN..=0_i32 | 2_i32..=i32::MAX => todo!()
+            }
+
+        }
+    }
+
+    for (_name, item) in &item_map {
+        println!("Item: {}, price: {:?}, quantity: {}", item.name, item.price, item.quantity);
+    }
 }
