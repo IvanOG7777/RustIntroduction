@@ -1,7 +1,6 @@
 use std::io;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry::{Occupied, Vacant};
-use std::io::Write;
 use crate::GradeChoices:: {AddGrade, StudentAverage, ClassHighest, ClassLowest};
 
 enum GradeChoices<'a> {
@@ -11,7 +10,7 @@ enum GradeChoices<'a> {
     ClassLowest
 }
 
-fn handle_choice(choice: GradeChoices, student_map: &mut HashMap<String, Vec<f32>>) -> Option<f32> {
+fn handle_choice(choice: GradeChoices, student_map: &mut HashMap<String, Vec<f32>>) -> Option<(String, f32)> {
     match choice {
         AddGrade(name, grade) => {
             match student_map.entry(name) {
@@ -36,7 +35,8 @@ fn handle_choice(choice: GradeChoices, student_map: &mut HashMap<String, Vec<f32
                 Some(grades) => {
                     let average = calculate_average(grades);
 
-                    Some(average)
+                    let student = (name.clone(), average);
+                    Some(student)
                 }
 
                 None => None
@@ -45,37 +45,45 @@ fn handle_choice(choice: GradeChoices, student_map: &mut HashMap<String, Vec<f32
 
         ClassHighest => {
             let mut highest_grade: f32 = 0.0;
+            let mut highest_name = String::new();
 
-            for (_name, grades) in student_map.into_iter() {
+            for (name, grades) in student_map.into_iter() {
                 let current_average = calculate_average(grades);
 
                 if current_average > highest_grade {
-                    highest_grade = current_average
+                    highest_grade = current_average;
+                    highest_name = name.clone();
                 }
             }
 
-            Some(highest_grade)
+            let student = (highest_name, highest_grade);
+
+            Some(student)
         },
 
         ClassLowest => {
-            let mut first_entry = student_map.iter_mut().next();
+            let (name, grades) = student_map.iter_mut().next().unwrap();
 
-            let mut lowest: f32 = calculate_average(first_entry.unwrap().1);
+            let mut lowest_average: f32 = calculate_average(grades);
+            let mut lowest_name = String::from(name);
 
-            for (_name, grade) in student_map.into_iter() {
+
+            for (name, grade) in student_map.into_iter() {
                 let current_average = calculate_average(grade);
 
-                if current_average < lowest {
-                    lowest = current_average;
+                if current_average < lowest_average {
+                    lowest_average = current_average;
+                    lowest_name = name.clone();
                 }
             }
-            Some(lowest)
+
+            let student = (lowest_name, lowest_average);
+            Some(student)
         }
     }
 }
 
 fn calculate_average(grades: &mut Vec<f32>) -> f32 {
-    let mut average: f32 = 0.0;
     let mut sum: f32 = 0.0;
     let mut total:f32 = 0.0;
     for grade in grades {
@@ -83,7 +91,7 @@ fn calculate_average(grades: &mut Vec<f32>) -> f32 {
         total += 1.0;
     }
 
-    average = sum / total;
+    let average = sum / total;
 
     average
 }
@@ -91,7 +99,7 @@ fn calculate_average(grades: &mut Vec<f32>) -> f32 {
 
 fn main() {
 
-    let mut still_grading = true;
+    let still_grading = true;
     let mut student_map: HashMap<String, Vec<f32>> = HashMap::new();
 
     'options: while still_grading {
@@ -145,7 +153,7 @@ fn main() {
 
                     grade = match student_grade.trim().parse() {
                         Ok(grade) => grade,
-                        Err(e) => {
+                        Err(_) => {
                             println!("Not a valid number try again");
                             continue;
                         }
@@ -173,8 +181,8 @@ fn main() {
                 let average = handle_choice(StudentAverage(&student_name), &mut student_map);
 
                 match average {
-                    Some(grade) => {
-                        println!("The average grade for: {student_name} is: {grade}");
+                    Some(student) => {
+                        println!("The average grade for: {} is: {}", student.0, student.1);
                     }
 
                     None => {
@@ -182,11 +190,39 @@ fn main() {
                     }
                 }
 
+            },
+
+            3 => {
+                let highest = handle_choice(ClassHighest, &mut student_map);
+
+                match highest {
+                    Some(student) => {
+                        println!("Highest grade average in class is: {} with grade average of {}", student.0, student.1);
+                    }
+
+                    None => {
+                        println!("No students available");
+                    }
+                }
             }
-            _ => {}
+
+            4 => {
+                let lowest = handle_choice(ClassLowest, &mut student_map);
+
+                match lowest {
+                    Some(student) => {
+                        println!("Lowest grade average in class is: {} with grade average of {}", student.0, student.1);
+                    }
+
+                    None => {
+                        println!("No students available");
+                    }
+                }
+            }
+            _ => {
+                println!("Not a valid option");
+            }
         }
-
-
     }
 
     for (name, grades) in student_map {
