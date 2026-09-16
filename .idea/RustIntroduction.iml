@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/minigrep/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/panic_or_not/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/student_grade_tracker/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/inventory_system/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/word_frequency/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Cargo/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/Cargo/target" />
@@ -15,6 +16,7 @@
       <excludeFolder url="file://$MODULE_DIR$/minigrep/target" />
       <excludeFolder url="file://$MODULE_DIR$/panic_or_not/target" />
       <excludeFolder url="file://$MODULE_DIR$/student_grade_tracker/target" />
+      <excludeFolder url="file://$MODULE_DIR$/inventory_system/target" />
       <excludeFolder url="file://$MODULE_DIR$/word_frequency/target" />
     </content>
     <orderEntry type="inheritedJdk" />

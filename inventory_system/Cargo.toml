@@ -1,5 +1,5 @@
 [package]
-name = "student_grade_tracker"
+name = "inventory_system"
 version = "0.1.0"
 edition = "2024"
 

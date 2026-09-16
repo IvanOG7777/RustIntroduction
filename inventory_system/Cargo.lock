@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "student_grade_tracker"
+name = "inventory_system"
 version = "0.1.0"
