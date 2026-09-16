@@ -103,7 +103,7 @@ fn main() {
         println!("4: Get class lowest grade");
         println!("5: Quit grading");
 
-        let option: u32;
+        let mut option: i32;
         loop {
             choose_option.clear();
             io::stdin().read_line(&mut choose_option).expect("Failed to read line");
@@ -112,7 +112,7 @@ fn main() {
                 Ok(num) => num,
 
                 Err(e) => {
-                    println!("Not a valid number try again");
+                    println!("Not a valid number try again: {e}");
                     continue;
                 }
             };
@@ -128,35 +128,64 @@ fn main() {
         }
 
         println!();
-        
 
-        let mut student_name = String::new();
-        let mut student_grade = String::new();
+        match option {
+            1 => {
+                let mut student_name = String::new();
+                let mut student_grade = String::new();
 
-        println!("Please enter name");
-        io::stdin().read_line(&mut student_name).expect("Failed to read line");
+                println!("Please enter name");
+                io::stdin().read_line(&mut student_name).expect("Failed to read line");
 
-        let mut grade:f32;
-        loop {
-            student_grade.clear();
-            println!("Please enter grade");
-            io::stdin().read_line(&mut student_grade).expect("Failed to read line");
+                let mut grade:f32;
+                loop {
+                    student_grade.clear();
+                    println!("Please enter grade");
+                    io::stdin().read_line(&mut student_grade).expect("Failed to read line");
 
-            grade = match student_grade.trim().parse() {
-                Ok(grade) => grade,
-                Err(e) => {
-                    println!("Not a valid number try again");
-                    continue;
+                    grade = match student_grade.trim().parse() {
+                        Ok(grade) => grade,
+                        Err(e) => {
+                            println!("Not a valid number try again");
+                            continue;
+                        }
+                    };
+
+                    if grade >= 0.0 {
+                        break;
+                    }
                 }
-            };
 
-            if grade >= 0.0 {
-                break;
+                student_name = String::from(student_name.trim());
+
+                handle_choice(AddGrade(student_name, grade), &mut student_map);
+                println!("Added graded");
+            },
+
+            2 => {
+                let mut student_name = String::new();
+                println!("Please enter name: ");
+
+                io::stdin().read_line(&mut student_name).expect("Failed to read line");
+
+                student_name = String::from(student_name.trim());
+
+                let average = handle_choice(StudentAverage(&student_name), &mut student_map);
+
+                match average {
+                    Some(grade) => {
+                        println!("The average grade for: {student_name} is: {grade}");
+                    }
+
+                    None => {
+                        println!("Couldn't find student");
+                    }
+                }
+
             }
+            _ => {}
         }
 
-        student_name = String::from(student_name.trim());
-        println!();
 
     }
 
