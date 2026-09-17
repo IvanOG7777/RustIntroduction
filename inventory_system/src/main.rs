@@ -1,6 +1,6 @@
 use std::io:: {self, Write};
 use std::collections::HashMap;
-use crate::Choice::{AddItem, RemoveItem, UpdateQuantity, FindItem, InventoryValue};
+use crate::Choice::{AddItem, RemoveItem, UpdateQuantity, FindItem, InventoryValue, UpdatePrice};
 use std::collections::hash_map::Entry::{Occupied, Vacant};
 
 struct Item {
@@ -10,8 +10,9 @@ struct Item {
 }
 
 enum Choice {
-    AddItem(String),
+    AddItem(String, f64),
     RemoveItem(String, u32),
+    UpdatePrice(String, f64),
     UpdateQuantity(String, u32),
     FindItem(String),
     InventoryValue(String),
@@ -20,7 +21,10 @@ enum Choice {
 enum ChoiceResults <'a> {
     Item(& 'a Item),
     Value(String, f64),
-    None,
+    Ok,
+    Err,
+    OkNew,
+    OkExists
 }
 
 impl Item {
@@ -49,7 +53,7 @@ fn calculate_value(item: &mut Item) -> Option<(String, f64)> {
 
 fn handle_choice(choice: Choice, mut inventory_map: &mut HashMap<String, Item>) -> ChoiceResults {
     match choice {
-        AddItem(item_name) => {
+        AddItem(item_name, price) => {
             let name = item_name.clone();
             match inventory_map.entry(item_name) {
                 Occupied(entry) => {
@@ -57,15 +61,18 @@ fn handle_choice(choice: Choice, mut inventory_map: &mut HashMap<String, Item>) 
 
                     item.quantity += 1;
 
-                    ChoiceResults::None
+                    item.price = Some(price);
+
+
+                    ChoiceResults::OkExists
                 },
 
                 Vacant(new_entry) => {
-                    let new_item = Item::create_item(name , None);
+                    let new_item = Item::create_item(name , Some(0.0));
 
                     new_entry.insert(new_item);
 
-                    ChoiceResults::None
+                    ChoiceResults::OkNew
                 }
             }
         },
@@ -76,12 +83,12 @@ fn handle_choice(choice: Choice, mut inventory_map: &mut HashMap<String, Item>) 
                     let mut item = entry.into_mut();
                     if quantity >= 1 && quantity < item.quantity {
                         item.quantity -= quantity;
-                        ChoiceResults::None
+                        ChoiceResults::Ok
                     } else {
-                        ChoiceResults::None
+                        ChoiceResults::Err
                     }
                 },
-                Vacant(_) => ChoiceResults::None
+                Vacant(_) => ChoiceResults::Err
             }
         },
 
@@ -95,10 +102,10 @@ fn handle_choice(choice: Choice, mut inventory_map: &mut HashMap<String, Item>) 
                         item.quantity = new_amount;
                     }
 
-                    ChoiceResults::None
+                    ChoiceResults::Ok
                 },
 
-                Vacant(_) => ChoiceResults::None
+                Vacant(_) => ChoiceResults::Err
             }
         },
 
@@ -111,12 +118,11 @@ fn handle_choice(choice: Choice, mut inventory_map: &mut HashMap<String, Item>) 
                     ChoiceResults::Item(item)
                 }
 
-                Vacant(_) => ChoiceResults::None
+                Vacant(_) => ChoiceResults::Err
             }
         },
 
         InventoryValue(item_name) => {
-            let name = item_name.clone();
             match inventory_map.entry(item_name) {
                 Occupied(entry) => {
                     let item = entry.into_mut();
@@ -128,11 +134,27 @@ fn handle_choice(choice: Choice, mut inventory_map: &mut HashMap<String, Item>) 
                             ChoiceResults::Value(item.0, item.1)
                         }
 
-                        None => ChoiceResults::None
+                        None => ChoiceResults::Err
                     }
                 },
 
-                Vacant(_) => ChoiceResults::None
+                Vacant(_) => ChoiceResults::Err
+            }
+        },
+
+        UpdatePrice(item_name, new_price) => {
+            match inventory_map.entry(item_name) {
+                Occupied(entry) => {
+                    let item = entry.into_mut();
+
+                    item.price = Some(new_price);
+
+                    ChoiceResults::Ok
+                },
+
+                Vacant(_) => {
+                    ChoiceResults::Err
+                }
             }
         }
     }
@@ -151,7 +173,8 @@ fn main() {
         println!("3: Update Quantity");
         println!("4: Find Item");
         println!("5: Inventory Value");
-        println!("6: Quit");
+        println!("6: Update Price");
+        println!("7: Quit");
 
         print!("Select: ");
         io::stdout().flush().unwrap();
@@ -166,24 +189,228 @@ fn main() {
             match option {
                 1 => {
                     let mut user_item_name = String::new();
+                    let mut user_item_price = String::new();
 
-                    println!("Please enter Item name: ");
+                    print!("Please enter Item name: ");
+                    io::stdout().flush().unwrap();
+
                     io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
 
-                    let item_name = String::from(user_item_name.trim());
-                    handle_choice(AddItem(item_name), &mut item_map);
+                    print!("Please enter Item price: ");
+                    io::stdout().flush().unwrap();
 
-                    println!("Item: {user_item_name} as been added or already exits");
+                    io::stdin().read_line(&mut user_item_price).expect("Failed to read line");
+
+
+                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    let item_price = match user_item_price.trim().parse() {
+                        Ok(num) => num,
+
+                        Err(_) => 0.0
+                    };
+
+
+                    let result = handle_choice(AddItem(item_name, item_price), &mut item_map);
+
+                    match result {
+                        ChoiceResults::OkExists => {
+                            println!("Item: {user_item_name}, exists, added 1 to inventory");
+                        },
+
+                        ChoiceResults::OkNew => {
+                            println!("Item: {user_item_name}, has been added to inventory");
+                        },
+
+                        (_) => {}
+                    }
                     break;
                 },
 
+                2 => {
+                    let mut user_item_name = String::new();
+                    let mut user_item_count = String::new();
+
+                    print!("Please enter name of item you want to delete: ");
+                    io::stdout().flush().unwrap();
+
+                    io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
+
+                    print!("Please enter number of items you want to delete: ");
+                    io::stdout().flush().unwrap();
+
+                    io::stdin().read_line(&mut user_item_count).expect("Failed to read line");
+
+                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    let item_count = match user_item_count.trim().parse() {
+                        Ok(num) => num,
+
+                        Err(_) => 0
+                    };
+
+                    let result = handle_choice(RemoveItem(item_name, item_count), &mut item_map);
+
+                    match result {
+                        ChoiceResults::Ok => {
+                            println!("Removed {item_count} of {user_item_name}");
+                            println!();
+                            break;
+                        },
+
+                        ChoiceResults::Err => {
+                            println!("Item not found");
+                            println!();
+                            break;
+                        }
+
+                        (_) => {break;}
+                    }
+                },
+
+                3 => {
+                    let mut user_item_name = String::new();
+                    let mut user_item_count = String::new();
+
+                    print!("Please enter name of item you want to update: ");
+                    io::stdout().flush().unwrap();
+
+                    io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
+
+                    print!("Please enter item update count: ");
+                    io::stdout().flush().unwrap();
+
+                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    let item_count = match user_item_count.trim().parse() {
+                        Ok(num) => num,
+
+                        Err(_) => 0,
+                    };
+
+                    let result = handle_choice(UpdateQuantity(item_name, item_count), &mut item_map);
+
+                    match result {
+                        ChoiceResults::Ok => {
+                            println!("Updated: {user_item_name} to: {item_count}");
+                            break;
+                        },
+
+                        ChoiceResults::Err => {
+                            println!("Item not found");
+                            break;
+                        }
+
+                        (_) => {break;}
+                    }
+                },
+
+                4 => {
+                    let mut user_item_name = String::new();
+
+                    print!("Please enter name of item you want to find: ");
+                    io::stdout().flush().unwrap();
+
+                    io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
+
+                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+
+                    let result = handle_choice(FindItem(item_name), &mut item_map);
+
+                    match result {
+                        ChoiceResults::Item(item) => {
+                            println!("Found item!");
+                            println!("Item details");
+
+                            print!("Name: {}", item.name);
+                            print!("Quantity: {}", item.quantity);
+                            print!("Price per item: {:?}", item.price);
+
+                            break;
+                        },
+
+                        ChoiceResults::Err => {
+                            println!("Item not found");
+                            break;
+                        },
+
+                        (_) => {break;}
+                    }
+                },
+
+                5 => {
+                    let mut user_item_name = String::new();
+
+                    print!("Enter name of item to find total inventory value: ");
+                    io::stdout().flush().unwrap();
+
+                    io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
+
+                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+
+                    let result = handle_choice(InventoryValue(item_name), &mut item_map);
+
+                    match result {
+
+                        ChoiceResults::Value(name, price) => {
+                            println!("Item: {name}, has a total inventory price of: {price}");
+                            break;
+                        },
+
+                        ChoiceResults::Err => {
+                            println!("Item not found");
+                            break;
+                        },
+
+                        (_) => {break;}
+                    }
+                },
+
                 6 => {
+                    let mut user_item_name = String::new();
+                    let mut user_item_price = String::new();
+
+                    print!("Enter name of item to update price: ");
+                    io::stdout().flush().unwrap();
+
+                    io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
+
+                    print!("Enter new price for item");
+                    io::stdout().flush().unwrap();
+
+                    io::stdin().read_line(&mut user_item_price).expect("Failed to read line");
+
+                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+
+                    let item_price = match user_item_price.trim().parse() {
+                        Ok(num) => num,
+
+                        Err(_) => {
+                            println!("Invalid price");
+                            break;
+                        },
+                    };
+
+                    let result = handle_choice(UpdatePrice(item_name, item_price), &mut item_map);
+
+                    match result {
+                        ChoiceResults::Ok => {
+                            println!("Price has been updated!");
+                            break;
+                        }
+
+                        ChoiceResults::Err => {
+                            println!("Item not found");
+                            break;
+                        },
+                        (_) => {break;}
+                    }
+                }
+
+                7 => {
                     println!("Quitting...");
                     break 'options;
-                }
-                i32::MIN..=0_i32 | 2_i32..=i32::MAX => todo!()
-            }
+                },
 
+                (_) => { println!("Invalid option");println!(); break;}
+            }
         }
     }
 
