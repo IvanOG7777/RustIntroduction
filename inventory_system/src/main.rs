@@ -68,7 +68,7 @@ fn handle_choice(choice: Choice, mut inventory_map: &mut HashMap<String, Item>) 
                 },
 
                 Vacant(new_entry) => {
-                    let new_item = Item::create_item(name , Some(0.0));
+                    let new_item = Item::create_item(name , Some(price));
 
                     new_entry.insert(new_item);
 
@@ -202,7 +202,7 @@ fn main() {
                     io::stdin().read_line(&mut user_item_price).expect("Failed to read line");
 
 
-                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    let item_name = String::from(user_item_name.trim());
                     let item_price = match user_item_price.trim().parse() {
                         Ok(num) => num,
 
@@ -240,7 +240,7 @@ fn main() {
 
                     io::stdin().read_line(&mut user_item_count).expect("Failed to read line");
 
-                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    let item_name = String::from(user_item_name.trim());
                     let item_count = match user_item_count.trim().parse() {
                         Ok(num) => num,
 
@@ -278,7 +278,9 @@ fn main() {
                     print!("Please enter item update count: ");
                     io::stdout().flush().unwrap();
 
-                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    io::stdin().read_line(&mut user_item_count).expect("Failed to read line");
+
+                    let item_name = String::from(user_item_name.trim());
                     let item_count = match user_item_count.trim().parse() {
                         Ok(num) => num,
 
@@ -310,7 +312,7 @@ fn main() {
 
                     io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
 
-                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    let item_name = String::from(user_item_name.trim());
 
                     let result = handle_choice(FindItem(item_name), &mut item_map);
 
@@ -343,7 +345,7 @@ fn main() {
 
                     io::stdin().read_line(&mut user_item_name).expect("Failed to read line");
 
-                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    let item_name = String::from(user_item_name.trim());
 
                     let result = handle_choice(InventoryValue(item_name), &mut item_map);
 
@@ -377,7 +379,7 @@ fn main() {
 
                     io::stdin().read_line(&mut user_item_price).expect("Failed to read line");
 
-                    let item_name = user_item_name.trim().parse().expect("Failed to trim and parse");
+                    let item_name = String::from(user_item_name.trim());
 
                     let item_price = match user_item_price.trim().parse() {
                         Ok(num) => num,
