@@ -56,6 +56,13 @@ fn send_notification(item: &impl Notification) {
     println!("{}", item.body());
 }
 
+// Passed generic type must have Notification implemented
+// Just reference the passed type and call the Notification functions
+fn send_notification_generic<T: Notification>(item: &T) {
+    println!("Notification from {}:", item.sender());
+    println!("{}", item.body());
+}
+
 fn main() {
     let email = Email {
         sender: String::from("Ivan"),
@@ -76,4 +83,8 @@ fn main() {
     send_notification(&email);
     send_notification(&text);
     send_notification(&discord);
+
+    send_notification_generic(&email);
+    send_notification_generic(&text);
+    send_notification_generic(&discord);
 }
