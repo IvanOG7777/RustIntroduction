@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/student_grade_tracker/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/inventory_system/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/word_frequency/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/file_program/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/safe_division/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Cargo/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/Cargo/target" />
@@ -19,6 +20,7 @@
       <excludeFolder url="file://$MODULE_DIR$/student_grade_tracker/target" />
       <excludeFolder url="file://$MODULE_DIR$/inventory_system/target" />
       <excludeFolder url="file://$MODULE_DIR$/word_frequency/target" />
+      <excludeFolder url="file://$MODULE_DIR$/file_program/target" />
       <excludeFolder url="file://$MODULE_DIR$/safe_division/target" />
     </content>
     <orderEntry type="inheritedJdk" />
