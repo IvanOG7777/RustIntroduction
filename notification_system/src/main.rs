@@ -1,6 +1,5 @@
 struct Email{
     sender: String,
-    subject: String,
     body: String,
 }
 
@@ -67,7 +66,6 @@ fn main() {
     let email = Email {
         sender: String::from("Ivan"),
         body: String::from("I wanna bike"),
-        subject: String::from("Some message"),
     };
 
     let text = TextMessage {
