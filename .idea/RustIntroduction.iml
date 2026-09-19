@@ -12,6 +12,7 @@
       <sourceFolder url="file://$MODULE_DIR$/word_frequency/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/file_program/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/safe_division/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/generic_largest/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Cargo/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/Cargo/target" />
       <excludeFolder url="file://$MODULE_DIR$/adder/target" />
@@ -22,6 +23,7 @@
       <excludeFolder url="file://$MODULE_DIR$/word_frequency/target" />
       <excludeFolder url="file://$MODULE_DIR$/file_program/target" />
       <excludeFolder url="file://$MODULE_DIR$/safe_division/target" />
+      <excludeFolder url="file://$MODULE_DIR$/generic_largest/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
