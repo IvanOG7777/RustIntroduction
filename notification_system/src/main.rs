@@ -1,5 +1,6 @@
 struct Email{
     sender: String,
+    subject: String,
     body: String,
 }
 
@@ -16,6 +17,11 @@ struct DiscordMessage{
 trait Notification {
     fn sender(&self) -> &str;
     fn body(&self) -> &str;
+
+    // adds new trait to Notification that all extension can see and have the option to use
+    fn preview(&self) -> String {
+        format!("Message from: {}", self.sender())
+    }
 }
 
 impl Notification for Email {
@@ -35,6 +41,10 @@ impl Notification for TextMessage {
 
     fn body(&self) -> &str {
         self.body.as_str()
+    }
+    // Allows for the preview message to be overridden by the TextMessage struct. Can change the message within
+    fn preview(&self) -> String {
+       format!("I have overridden the preview() for TextMessage struct")
     }
 }
 
@@ -66,6 +76,7 @@ fn main() {
     let email = Email {
         sender: String::from("Ivan"),
         body: String::from("I wanna bike"),
+        subject: String::from("Some message"),
     };
 
     let text = TextMessage {
@@ -85,4 +96,11 @@ fn main() {
     send_notification_generic(&email);
     send_notification_generic(&text);
     send_notification_generic(&discord);
+
+    println!();
+    println!();
+    println!("{}", discord.preview());
+    send_notification_generic(&discord);
+
+    println!("Overridden message: {}", text.preview());
 }
