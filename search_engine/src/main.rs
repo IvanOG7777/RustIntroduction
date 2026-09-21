@@ -1,20 +1,31 @@
 use std::{env, fs, process};
 use std::error::Error;
+use std::sync::mpsc::SyncSender;
 
 struct Config {
     query: String,
     file_path: String,
+    ignore_case: bool,
+    count: bool
+}
+
+enum ReturnType<'a> {
+    Vector(Result<Vec<&'a str>, &'static str>),
+    Count(u32),
+    Err(&'a str)
 }
 
 impl Config {
 
-    fn new_config(passed_query: &String, passed_file_path: &String) -> Config {
+    fn new_config(passed_query: &String, passed_file_path: &String, ignore_case: bool, count: bool) -> Config {
 
         let query = passed_query.clone();
         let file_path = passed_file_path.clone();
         Config {
             query,
-            file_path
+            file_path,
+            ignore_case,
+            count
         }
     }
 
@@ -25,27 +36,74 @@ impl Config {
 
         let query = &args[1];
         let file_path = &args[2];
+        let feature = &args[3];
 
-        let config = Config::new_config(query, file_path);
+        let mut ignore_case = false;
+        let mut count = false;
+
+        if feature == "--ignore_case" {
+            ignore_case = true;
+        } else if feature == "--count" {
+            count = true
+        } else {
+            return Err("Invalid feature argument");
+        }
+
+
+        let config = Config::new_config(query, file_path, ignore_case, count);
 
         Ok(config)
     }
 }
 
-fn search<'a> (query: &str, contents: &'a str) -> Result<Vec<&'a str>, &'static str> {
+fn search<'a> (query: &str, contents: &'a str) -> ReturnType<'a> {
     if contents.len() <= 0 {
-        return Err("No content was provided to search for")
+        return ReturnType::Err("No content was provided to search for")
     }
 
     let mut return_vector: Vec<&'a str> = Vec::new();
 
     for line in contents.lines() {
-            if line.contains(query) {
-                return_vector.push(line);
-            }
+        if line.contains(query) {
+            return_vector.push(line);
+        }
     }
 
-    Ok(return_vector)
+    ReturnType::Vector(Ok(return_vector))
+}
+
+fn search_ignore_case<'a> (query: &str, contents: &'a str) -> ReturnType<'a> {
+    if contents.len() <= 0 {
+        return ReturnType::Err("No content was provided to search for")
+    }
+
+    let mut return_vector: Vec<&'a str> = Vec::new();
+    let query_to_lower = query.to_lowercase();
+
+    for line in contents.lines() {
+        if line.to_lowercase().contains(&query_to_lower) {
+            return_vector.push(line);
+        }
+    }
+
+    ReturnType::Vector(Ok(return_vector))
+}
+
+fn search_count<'a> (query: &str, contents: &'a str) -> ReturnType<'a> {
+    if contents.len() <= 0 {
+        return ReturnType::Err("No content was provided to search for")
+    }
+
+    let mut count: u32 = 0;
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            count += 1;
+        }
+    }
+
+
+    ReturnType::Count(count)
 }
 
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
@@ -60,18 +118,35 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
         }
     };
 
-    let search_result = search(&config.query, &contents);
+    let mut search_result = ReturnType::Err("No matching cases in run");
+    if config.ignore_case == false && config.count == false {
+        search_result = search(&config.query, &contents);
+    } else if config.ignore_case == true {
+        search_result = search_ignore_case(&config.query, &contents);
+    } else if config.count == true {
+        search_result = search_count(&config.query, &contents);
+    }
 
-    let valid_lines = match search_result {
-        Ok(line_vector) => line_vector,
+    match search_result {
+        ReturnType::Vector(built_vector) => {
 
-        Err(e) => {
-            return Err(e.into())
+            match built_vector {
+                Ok(valid_lines) => {
+                    for line in valid_lines {
+                        println!("{line}");
+                    }
+                }
+                Err(e) => println!("{}", e),
+            }
         }
-    };
 
-    for line in valid_lines {
-        println!("{line}");
+        ReturnType::Count(count) => {
+            println!("There are {} references to the query: {}", count, config.query);
+        }
+
+        ReturnType::Err(e) => {
+            print!("Something went wrong, error is: {e}");
+        }
     }
 
     Ok(())
