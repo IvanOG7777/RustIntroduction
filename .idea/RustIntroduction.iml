@@ -17,6 +17,8 @@
       <sourceFolder url="file://$MODULE_DIR$/longest_lifetime_string/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/struct_containing_reference/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tempature_converter/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/expected_errors/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/search_engine/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Cargo/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/Cargo/target" />
       <excludeFolder url="file://$MODULE_DIR$/adder/target" />
@@ -32,6 +34,8 @@
       <excludeFolder url="file://$MODULE_DIR$/longest_lifetime_string/target" />
       <excludeFolder url="file://$MODULE_DIR$/struct_containing_reference/target" />
       <excludeFolder url="file://$MODULE_DIR$/tempature_converter/target" />
+      <excludeFolder url="file://$MODULE_DIR$/expected_errors/target" />
+      <excludeFolder url="file://$MODULE_DIR$/search_engine/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

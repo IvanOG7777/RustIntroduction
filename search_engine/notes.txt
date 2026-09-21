@@ -1,0 +1,8 @@
+Hello this is the text I will be using
+I am learning Rust right now.
+It is a very interesting language, with a lot of similarities to c/c++.
+While learning Rust,
+There are some elements from rust, that I would like to implement into c++.
+Things in rust such as,
+Result<T, E> and Option<T>
+Overall im really enjoying learning Rust!
