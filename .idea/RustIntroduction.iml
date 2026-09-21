@@ -19,6 +19,7 @@
       <sourceFolder url="file://$MODULE_DIR$/tempature_converter/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/expected_errors/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/search_engine/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/simple_library/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/Cargo/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/Cargo/target" />
       <excludeFolder url="file://$MODULE_DIR$/adder/target" />
@@ -36,6 +37,7 @@
       <excludeFolder url="file://$MODULE_DIR$/tempature_converter/target" />
       <excludeFolder url="file://$MODULE_DIR$/expected_errors/target" />
       <excludeFolder url="file://$MODULE_DIR$/search_engine/target" />
+      <excludeFolder url="file://$MODULE_DIR$/simple_library/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
