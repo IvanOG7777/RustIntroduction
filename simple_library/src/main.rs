@@ -7,10 +7,18 @@ struct Book {
     available: bool,
 }
 
+struct User {
+    name: String,
+    id: u32,
+    checked_books: Vec<Book>,
+}
+
+
 // Instance of library will own book when inserted
 struct Library {
     // use book title as key, and book as value
     books: HashMap<String, Book>,
+    users: Vec<User>
 }
 
 impl Book {
@@ -47,6 +55,7 @@ impl Library {
     fn new_library() -> Library {
         Library {
             books: HashMap::new(),
+            users: Vec::new(),
         }
     }
 
@@ -149,111 +158,6 @@ impl Library {
     }
 }
 
-struct User {
-    name: String,
-    id: u32,
-    checked_books: Vec<Book>,
-}
-
 fn main() {
     let mut library = Library::new_library();
-
-    let mut result = library.add(String::from("Intel For Idiots"), String::from("Ivan"));
-    println!();
-    match result {
-        ReturnValues::AddOk(message) => println!("{message}"),
-
-        (_) => {}
-    }
-
-    println!("Books in library: {}", library.books.len());
-
-    for (key, value) in &library.books {
-        println!("Title: {key}, Author: {}, Availability: {}", value.author, value.available);
-    }
-
-    result = library.remove(String::from("Intel Fr Idiots"));
-    println!();
-    match result {
-        ReturnValues::RemoveOk(message) => println!("{message}"),
-        ReturnValues::RemoveErr(message) => println!("{message}"),
-        (_) => {}
-    }
-
-    println!("Books in library: {}", library.books.len());
-
-    for (key, value) in &library.books {
-        println!("Title: {key}, Author: {}, Availability: {}", value.author, value.available);
-    }
-
-    result = library.search(String::from("Intel For Idiots"));
-    println!();
-    match result {
-        ReturnValues::SearchOk(message, book) => {
-            println!("{message}");
-
-            println!("Book details");
-            println!("Author: {}", book.author);
-            println!("Title: {}", book.title);
-            println!("Availability: {}", book.available);
-            println!();
-        }
-
-        ReturnValues::SearchErr(message) => println!("{message}"),
-
-        (_) => {}
-    }
-
-    result = library.checkout(String::from("Intel For Idiots"));
-    println!();
-
-    match result {
-        ReturnValues::CheckoutOk(message) => println!("{message}"),
-        ReturnValues::CheckoutErr(message) => println!("{message}"),
-
-        (_) => {}
-    }
-    println!();
-
-    for (key, value) in &library.books {
-        println!("Title: {key}, Author: {}, Availability: {}", value.author, value.available);
-    }
-
-    result = library.checkout(String::from("Intel For Idits"));
-    println!();
-
-    match result {
-        ReturnValues::CheckoutOk(message) => println!("{message}"),
-        ReturnValues::CheckoutErr(message) => println!("{message}"),
-
-        (_) => {}
-    }
-    println!();
-
-    result = library.return_book(String::from("Intel For Idiots"));
-
-    match result {
-        ReturnValues::ReturnBookOk(message) => println!("{message}"),
-        ReturnValues::ReturnBookErr(message) => println!("{message}"),
-
-        (_) => {}
-    }
-
-    result = library.return_book(String::from("Intel For Idiots"));
-
-    match result {
-        ReturnValues::ReturnBookOk(message) => println!("{message}"),
-        ReturnValues::ReturnBookErr(message) => println!("{message}"),
-
-        (_) => {}
-    }
-
-    library.add("Did ya know?".to_string(), "Three Sinners".to_string());
-    library.add("Running away".to_string(), "Three Sacred Souls".to_string());
-    library.add("Changes".to_string(), "Charles Bradley".to_string());
-
-    
-    library.checkout("Did ya know?".to_string());
-
-    library.list();
 }
