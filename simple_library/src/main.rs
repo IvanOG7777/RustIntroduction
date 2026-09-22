@@ -52,6 +52,7 @@ impl Library {
 
     fn add(&mut self, title: String, author: String) -> ReturnValues {
         let new_book = Book::new_book(title, author.clone(), true);
+
         let title = new_book.title.clone();
         let author_ = new_book.author.clone();
 
@@ -83,7 +84,7 @@ impl Library {
                 ReturnValues::SearchOk("Book found!".to_string(), book)
             }
 
-            None => ReturnValues::ReturnBookErr("Book not found".to_string())
+            None => ReturnValues::SearchErr("Book not found".to_string())
         }
     }
 
@@ -107,11 +108,45 @@ impl Library {
         }
     }
 
-    fn return_book(&mut self, title: String) {
+    fn return_book(&mut self, title: String) -> ReturnValues {
+        match self.books.entry(title) {
+            Entry::Occupied(entry) => {
+                let book = entry.into_mut();
 
+                if book.available == false {
+                    book.available = true;
+
+                    return ReturnValues::ReturnBookOk("Book has been returned".to_string())
+                }
+
+                ReturnValues::ReturnBookErr("Book has already been returned".to_string())
+            }
+
+            Entry::Vacant(_) => ReturnValues::ReturnBookErr("Book not found".to_string())
+        }
     }
 
-    fn list() {}
+    fn list(&self) {
+        if self.books.len() > 0 {
+            println!("List of books: ");
+
+            for (_, book) in &self.books {
+                println!("Title: {}", book.title);
+                println!("Author: {}", book.author);
+
+                if book.available == true {
+                    println!("Availability: Yes");
+                } else {
+                    println!("Availability: No");
+                }
+
+                println!();
+            }
+        } else {
+            println!("No books in library");
+            println!();
+        }
+    }
 }
 
 struct User {
@@ -161,6 +196,7 @@ fn main() {
             println!("Author: {}", book.author);
             println!("Title: {}", book.title);
             println!("Availability: {}", book.available);
+            println!();
         }
 
         ReturnValues::SearchErr(message) => println!("{message}"),
@@ -183,7 +219,7 @@ fn main() {
         println!("Title: {key}, Author: {}, Availability: {}", value.author, value.available);
     }
 
-    result = library.checkout(String::from("Intel For Idiots"));
+    result = library.checkout(String::from("Intel For Idits"));
     println!();
 
     match result {
@@ -193,4 +229,31 @@ fn main() {
         (_) => {}
     }
     println!();
+
+    result = library.return_book(String::from("Intel For Idiots"));
+
+    match result {
+        ReturnValues::ReturnBookOk(message) => println!("{message}"),
+        ReturnValues::ReturnBookErr(message) => println!("{message}"),
+
+        (_) => {}
+    }
+
+    result = library.return_book(String::from("Intel For Idiots"));
+
+    match result {
+        ReturnValues::ReturnBookOk(message) => println!("{message}"),
+        ReturnValues::ReturnBookErr(message) => println!("{message}"),
+
+        (_) => {}
+    }
+
+    library.add("Did ya know?".to_string(), "Three Sinners".to_string());
+    library.add("Running away".to_string(), "Three Sacred Souls".to_string());
+    library.add("Changes".to_string(), "Charles Bradley".to_string());
+
+    
+    library.checkout("Did ya know?".to_string());
+
+    library.list();
 }
