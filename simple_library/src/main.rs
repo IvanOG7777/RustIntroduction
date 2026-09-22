@@ -24,13 +24,21 @@ impl Book {
 }
 
 // custom enum return values
-enum ReturnValues {
+enum ReturnValues<'a> {
     AddOk(String),
     AddErr(String),
 
     RemoveOk(String),
     RemoveErr(String),
 
+    SearchOk(String, & 'a Book),
+    SearchErr(String),
+
+    CheckoutOk(String),
+    CheckoutErr(String),
+
+    ReturnBookOk(String),
+    ReturnBookErr(String),
 }
 
 impl Library {
@@ -69,20 +77,54 @@ impl Library {
         }
     }
 
-    fn search() {}
+    fn search(&mut self, title: String) -> ReturnValues {
+        match self.books.get(&title) {
+            Some(book) => {
+                ReturnValues::SearchOk("Book found!".to_string(), book)
+            }
 
-    fn checkout() {}
+            None => ReturnValues::ReturnBookErr("Book not found".to_string())
+        }
+    }
 
-    fn return_book() {}
+    fn checkout(&mut self, title: String) -> ReturnValues {
+        match self.books.entry(title) {
+            Entry::Occupied(entry) => {
+                let book = entry.into_mut();
+
+                if book.available == true {
+                    book.available = false;
+
+                    return ReturnValues::CheckoutOk("Book as been checked out to user!".to_string())
+                }
+
+                ReturnValues::CheckoutErr("Book has already been checked out to another user".to_string())
+            }
+
+            Entry::Vacant(_) => {
+                ReturnValues::CheckoutErr("Book not found".to_string())
+            }
+        }
+    }
+
+    fn return_book(&mut self, title: String) {
+
+    }
 
     fn list() {}
+}
+
+struct User {
+    name: String,
+    id: u32,
+    checked_books: Vec<Book>,
 }
 
 fn main() {
     let mut library = Library::new_library();
 
     let mut result = library.add(String::from("Intel For Idiots"), String::from("Ivan"));
-
+    println!();
     match result {
         ReturnValues::AddOk(message) => println!("{message}"),
 
@@ -96,7 +138,7 @@ fn main() {
     }
 
     result = library.remove(String::from("Intel Fr Idiots"));
-
+    println!();
     match result {
         ReturnValues::RemoveOk(message) => println!("{message}"),
         ReturnValues::RemoveErr(message) => println!("{message}"),
@@ -108,4 +150,47 @@ fn main() {
     for (key, value) in &library.books {
         println!("Title: {key}, Author: {}, Availability: {}", value.author, value.available);
     }
+
+    result = library.search(String::from("Intel For Idiots"));
+    println!();
+    match result {
+        ReturnValues::SearchOk(message, book) => {
+            println!("{message}");
+
+            println!("Book details");
+            println!("Author: {}", book.author);
+            println!("Title: {}", book.title);
+            println!("Availability: {}", book.available);
+        }
+
+        ReturnValues::SearchErr(message) => println!("{message}"),
+
+        (_) => {}
+    }
+
+    result = library.checkout(String::from("Intel For Idiots"));
+    println!();
+
+    match result {
+        ReturnValues::CheckoutOk(message) => println!("{message}"),
+        ReturnValues::CheckoutErr(message) => println!("{message}"),
+
+        (_) => {}
+    }
+    println!();
+
+    for (key, value) in &library.books {
+        println!("Title: {key}, Author: {}, Availability: {}", value.author, value.available);
+    }
+
+    result = library.checkout(String::from("Intel For Idiots"));
+    println!();
+
+    match result {
+        ReturnValues::CheckoutOk(message) => println!("{message}"),
+        ReturnValues::CheckoutErr(message) => println!("{message}"),
+
+        (_) => {}
+    }
+    println!();
 }
