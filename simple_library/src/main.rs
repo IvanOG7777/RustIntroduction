@@ -28,7 +28,7 @@ enum ReturnValues {
     AddOk(String),
     AddErr(String),
 
-    RemoveOk(String, Book),
+    RemoveOk(String),
     RemoveErr(String),
 
 }
@@ -54,8 +54,17 @@ impl Library {
 
     fn remove(&mut self, title: String) -> ReturnValues {
         match self.books.entry(title) {
-            Entry::Occupied(book) => {
-                
+            Entry::Occupied(entry) => {
+                let book = entry.into_mut();
+                let book_title = book.title.clone();
+                let book_author = book.author.clone();
+                self.books.remove(&book_title);
+
+                ReturnValues::RemoveOk(format!("The book: {} by {}, has been removed", book_title, book_author))
+            }
+
+            Entry::Vacant(_) => {
+                ReturnValues::RemoveErr("Book not found".to_string())
             }
         }
     }
@@ -72,11 +81,31 @@ impl Library {
 fn main() {
     let mut library = Library::new_library();
 
-    let result = library.add(String::from("Intel For Idiots"), String::from("Ivan"));
+    let mut result = library.add(String::from("Intel For Idiots"), String::from("Ivan"));
 
     match result {
         ReturnValues::AddOk(message) => println!("{message}"),
 
         (_) => {}
+    }
+
+    println!("Books in library: {}", library.books.len());
+
+    for (key, value) in &library.books {
+        println!("Title: {key}, Author: {}, Availability: {}", value.author, value.available);
+    }
+
+    result = library.remove(String::from("Intel Fr Idiots"));
+
+    match result {
+        ReturnValues::RemoveOk(message) => println!("{message}"),
+        ReturnValues::RemoveErr(message) => println!("{message}"),
+        (_) => {}
+    }
+
+    println!("Books in library: {}", library.books.len());
+
+    for (key, value) in &library.books {
+        println!("Title: {key}, Author: {}, Availability: {}", value.author, value.available);
     }
 }
