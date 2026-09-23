@@ -27,16 +27,16 @@ impl User {
 
     fn list(&self) {
 
-        if (self.checked_books.len() > 0) {
+        if self.checked_books.len() > 0 {
             println!("Checked out books");
             for (_, book) in &self.checked_books {
                 println!("Title: {}", book.title);
                 println!("Author: {}", book.author);
                 println!("Availability: {}", book.available);
             }
+        } else {
+            println!("No checked out books");
         }
-
-        println!("No checked out books");
     }
 
     fn add(&mut self, title: String, author: String) -> ReturnValues {
