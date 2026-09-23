@@ -11,7 +11,7 @@ struct Book {
 struct User {
     name: String,
     id: u32,
-    checked_books: Vec<Book>,
+    checked_books: HashMap<String, Book>,
 }
 
 impl User {
@@ -20,8 +20,22 @@ impl User {
         User {
             name,
             id,
-            checked_books: Vec::new(),
+            checked_books: HashMap::new(),
         }
+    }
+
+    fn list(&self) {
+
+        if (self.checked_books.len() > 0) {
+            println!("Checked out books");
+            for (_, book) in &self.checked_books {
+                println!("Title: {}", book.title);
+                println!("Author: {}", book.author);
+                println!("Availability: {}", book.available);
+            }
+        }
+
+        println!("No checked out books");
     }
 }
 
@@ -70,9 +84,9 @@ enum ReturnValues<'a> {
 impl Library {
 
     fn add_user(&mut self, user: User) -> ReturnValues {
+        let user_name = user.name.clone();
         self.users.insert(user.id, user);
-
-        ReturnValues::AddOk("User has been added".to_string())
+        ReturnValues::AddOk(format!("User: {} has been added", user_name))
     }
 
     fn delete_user(&mut self, id: u32) -> ReturnValues {
@@ -161,14 +175,14 @@ impl Library {
 
         match result {
             ReturnValues::FindUserOk(_, user) => {
-                user.checked_books.push(book);
+                user.checked_books.insert(book.title, book);
 
                 ReturnValues::CheckoutOk(format!("User: {}, has checked out a book", user.name))
             }
 
             ReturnValues::FindUserErr(err) => {ReturnValues::CheckoutErr(err)},
 
-            _ => {ReturnValues::CheckoutErr("Something went wrong".to_string())}
+            _ => {ReturnValues::CheckoutErr("Something went wrong".to_string())} // defaults to this if no other error is caught
         }
     }
 
@@ -219,12 +233,14 @@ fn main() {
     let user1 = User::new_user("Ivan".to_string(), 1);
     let user2 = User::new_user("Zakai".to_string(), 2);
     let user3 = User::new_user("Cassandra".to_string(), 3);
+    let user4 = User::new_user("Louis".to_string(), 4);
 
     let mut users:Vec<User> = Vec::new();
 
     users.push(user1);
     users.push(user2);
     users.push(user3);
+    users.push(user4);
 
     for user in users {
         let result = library.add_user(user);
@@ -233,5 +249,30 @@ fn main() {
             ReturnValues::AddOk(message) => println!("{}", message),
             _ => {}
         }
+    }
+    println!();
+
+    library.add("Intel for Idiots".to_string(), "The Drink".to_string());
+    library.add("My brother just another me".to_string(), "Lucci".to_string());
+    library.add("Lobat".to_string(), "Mazda Nava".to_string());
+
+    library.list();
+
+    let result = library.checkout("Intel for Idiots".to_string(), 1);
+
+    match result {
+        ReturnValues::CheckoutOk(message) => println!("{}", message),
+        ReturnValues::CheckoutErr(err) => println!("{err}"),
+        ReturnValues::FindUserErr(err) => println!("{err}"),
+        (_) => {},
+    }
+    println!();
+
+    library.list();
+
+    println!();
+
+    for (_, user) in &library.users {
+        user.list();
     }
 }
