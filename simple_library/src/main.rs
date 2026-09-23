@@ -6,6 +6,7 @@ struct Book {
     title: String,
     author: String,
     available: bool,
+    current_owner: Option<u32>,
 }
 
 struct User {
@@ -37,6 +38,17 @@ impl User {
 
         println!("No checked out books");
     }
+
+    fn add(&mut self, title: String, author: String) -> ReturnValues {
+        let book = Book::new_book(title, author, true);
+
+        let title = book.title.clone();
+        let author_ = book.author.clone();
+
+        self.checked_books.insert(title.clone(), book);
+
+        ReturnValues::AddOk(format!("Book: {}, has been added to {}, checkout books!", title, self.name))
+    }
 }
 
 
@@ -52,7 +64,8 @@ impl Book {
         Book {
             title,
             author,
-            available
+            available,
+            current_owner: None
         }
     }
 }
@@ -165,33 +178,51 @@ impl Library {
     }
 
     fn checkout(&mut self, title: String, user_id: u32) -> ReturnValues {
-        let book = match self.books.remove(&title) {
-            Some(book) => book,
 
-            None => return ReturnValues::CheckoutErr("Book not found".to_string())
+        let book = match self.books.get_mut(&title) {
+            Some(book) => book,
+            None => {return ReturnValues::CheckoutErr("Book not found".to_string())}
         };
 
-        let result = self.find_user(user_id);
+        let user = match self.users.get_mut(&user_id) {
+            Some(user) => user,
+            None => {return ReturnValues::CheckoutErr("User not found".to_string())}
+        };
 
-        match result {
-            ReturnValues::FindUserOk(_, user) => {
-                user.checked_books.insert(book.title, book);
+        if book.available == true {
+            let copy_title = book.title.clone();
+            let author_copy = book.author.clone();
 
-                ReturnValues::CheckoutOk(format!("User: {}, has checked out a book", user.name))
-            }
+            user.add(copy_title, author_copy);
 
-            ReturnValues::FindUserErr(err) => {ReturnValues::CheckoutErr(err)},
+            book.available = false;
+            book.current_owner = Some(user.id);
 
-            _ => {ReturnValues::CheckoutErr("Something went wrong".to_string())} // defaults to this if no other error is caught
+            return ReturnValues::CheckoutOk(format!("Book: {}, has been checked out by {}", book.title, user.name))
         }
+
+        ReturnValues::CheckoutErr(format!("Book: {}, has already been checked", book.title))
     }
 
     fn return_book(&mut self, title: String) -> ReturnValues {
+        let title_copy = title.clone();
         match self.books.entry(title) {
             Entry::Occupied(entry) => {
                 let book = entry.into_mut();
 
+                let owner_id = match book.current_owner {
+                    Some(id) => id,
+                    None => {return ReturnValues::ReturnBookErr("Book has already been returned".to_string())}
+                };
+
+
                 if book.available == false {
+                    let user = match self.users.get_mut(&owner_id) {
+                        Some(user) => user,
+                        None => {return ReturnValues::ReturnBookErr("User not found".to_string())}
+                    };
+
+                    user.checked_books.remove(&title_copy);
                     book.available = true;
 
                     return ReturnValues::ReturnBookOk("Book has been returned".to_string())
@@ -258,7 +289,7 @@ fn main() {
 
     library.list();
 
-    let result = library.checkout("Intel for Idiots".to_string(), 1);
+    let mut result = library.checkout("Intel for Idiots".to_string(), 1);
 
     match result {
         ReturnValues::CheckoutOk(message) => println!("{}", message),
@@ -275,4 +306,14 @@ fn main() {
     for (_, user) in &library.users {
         user.list();
     }
+
+    result = library.return_book("Intel for Idiots".to_string());
+
+    match result {
+        ReturnValues::ReturnBookOk(message) => println!("{}", message),
+        ReturnValues::ReturnBookErr(err) => println!("{err}"),
+        (_) => {}
+    }
+
+    library.list();
 }
