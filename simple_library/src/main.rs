@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
@@ -11,6 +12,17 @@ struct User {
     name: String,
     id: u32,
     checked_books: Vec<Book>,
+}
+
+impl User {
+    // pass ID for now, might make random one later
+    fn new_user(name: String, id: u32) -> User {
+        User {
+            name,
+            id,
+            checked_books: Vec::new(),
+        }
+    }
 }
 
 
@@ -51,18 +63,16 @@ enum ReturnValues<'a> {
     DeleteUserOk(String),
     DeleteUserErr(String),
 
-
+    FindUserOk(String, & 'a mut User),
+    FindUserErr(String),
 }
 
 impl Library {
 
-    // pass ID for now, might make random one later
-    fn new_user(name: String, id: u32) -> User {
-        User {
-            name,
-            id,
-            checked_books: Vec::new(),
-        }
+    fn add_user(&mut self, user: User) -> ReturnValues {
+        self.users.insert(user.id, user);
+
+        ReturnValues::AddOk("User has been added".to_string())
     }
 
     fn delete_user(&mut self, id: u32) -> ReturnValues {
@@ -78,6 +88,19 @@ impl Library {
             }
 
             None => ReturnValues::DeleteUserErr("User not found".to_string())
+        }
+    }
+
+    fn find_user(&mut self, user_id: u32) -> ReturnValues {
+        match self.users.get_mut(&user_id) {
+            Some(user) => {
+                let user_name = user.name.clone();
+                ReturnValues::FindUserOk(format!("User: {user_name}, found"), user)
+            }
+
+            None => {
+                ReturnValues::FindUserErr("User not found".to_string())
+            }
         }
     }
 
@@ -128,22 +151,24 @@ impl Library {
     }
 
     fn checkout(&mut self, title: String, user_id: u32) -> ReturnValues {
-        match self.books.entry(title) {
-            Entry::Occupied(entry) => {
-                let book = entry.into_mut();
+        let book = match self.books.remove(&title) {
+            Some(book) => book,
 
-                if book.available == true {
-                    book.available = false;
+            None => return ReturnValues::CheckoutErr("Book not found".to_string())
+        };
 
-                    return ReturnValues::CheckoutOk("Book as been checked out to user!".to_string())
-                }
+        let result = self.find_user(user_id);
 
-                ReturnValues::CheckoutErr("Book has already been checked out to another user".to_string())
+        match result {
+            ReturnValues::FindUserOk(_, user) => {
+                user.checked_books.push(book);
+
+                ReturnValues::CheckoutOk(format!("User: {}, has checked out a book", user.name))
             }
 
-            Entry::Vacant(_) => {
-                ReturnValues::CheckoutErr("Book not found".to_string())
-            }
+            ReturnValues::FindUserErr(err) => {ReturnValues::CheckoutErr(err)},
+
+            _ => {ReturnValues::CheckoutErr("Something went wrong".to_string())}
         }
     }
 
@@ -190,4 +215,23 @@ impl Library {
 
 fn main() {
     let mut library = Library::new_library();
+
+    let user1 = User::new_user("Ivan".to_string(), 1);
+    let user2 = User::new_user("Zakai".to_string(), 2);
+    let user3 = User::new_user("Cassandra".to_string(), 3);
+
+    let mut users:Vec<User> = Vec::new();
+
+    users.push(user1);
+    users.push(user2);
+    users.push(user3);
+
+    for user in users {
+        let result = library.add_user(user);
+
+        match result {
+            ReturnValues::AddOk(message) => println!("{}", message),
+            _ => {}
+        }
+    }
 }
